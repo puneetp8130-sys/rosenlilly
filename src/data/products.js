@@ -1,0 +1,108 @@
+const products = [
+  {
+    id: 1,
+    name: "Premium Red Roses",
+    category: "roses",
+    categoryName: "Roses",
+    price: 799,
+    oldPrice: 999,
+    rating: 4.9,
+    reviews: 128,
+    discount: 20,
+    image:
+      "https://images.unsplash.com/photo-1496062031456-07b8f162a322?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 2,
+    name: "Dreamy Pink Bouquet",
+    category: "bouquets",
+    categoryName: "Bouquets",
+    price: 899,
+    oldPrice: 1199,
+    rating: 4.8,
+    reviews: 96,
+    discount: 25,
+    image:
+      "https://images.unsplash.com/photo-1523691509543-c55fb32e5cee?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 3,
+    name: "Elegant White Lilies",
+    category: "lilies",
+    categoryName: "Lilies",
+    price: 699,
+    oldPrice: 899,
+    rating: 4.7,
+    reviews: 74,
+    discount: 22,
+    image:
+      "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 4,
+    name: "Bright Sunflower Basket",
+    category: "sunflowers",
+    categoryName: "Sunflowers",
+    price: 749,
+    oldPrice: 949,
+    rating: 4.9,
+    reviews: 112,
+    discount: 21,
+    image:
+      "https://images.unsplash.com/photo-1597848212624-e19f5e8f9c95?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 5,
+    name: "Purple Orchid Elegance",
+    category: "orchids",
+    categoryName: "Orchids",
+    price: 999,
+    oldPrice: 1299,
+    rating: 4.8,
+    reviews: 87,
+    discount: 23,
+    image:
+      "https://images.unsplash.com/photo-1560717789-0ac7c58ac90a?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 6,
+    name: "Garden Mixed Flowers",
+    category: "mixed-flowers",
+    categoryName: "Mixed Flowers",
+    price: 849,
+    oldPrice: 1099,
+    rating: 4.7,
+    reviews: 65,
+    discount: 23,
+    image:
+      "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 7,
+    name: "Classic Red Rose Bouquet",
+    category: "roses",
+    categoryName: "Roses",
+    price: 1099,
+    oldPrice: 1399,
+    rating: 4.9,
+    reviews: 154,
+    discount: 21,
+    image:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=85",
+  },
+  {
+    id: 8,
+    name: "Pastel Flower Bouquet",
+    category: "bouquets",
+    categoryName: "Bouquets",
+    price: 1199,
+    oldPrice: 1499,
+    rating: 4.8,
+    reviews: 103,
+    discount: 20,
+    image:
+      "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=800&q=85",
+  },
+];
+
+export default products;
