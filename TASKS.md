@@ -23,8 +23,8 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 
 ## Highest priority — core journey correctness
 
-- [ ] Fix category navigation: links currently target `/category/:slug`, but that route is not defined. Decide whether category pages use that route or `/flowers?category=<slug>`, then make all category links consistent.
-- [ ] Read the `category` query parameter in `Products` so links from the category landing page pre-filter the catalogue.
+- [x] Fix category navigation by standardizing catalogue-category links on `/flowers?category=<slug>`; unsupported occasion/offer links now lead to the full catalogue instead of a 404 page.
+- [x] Read the `category` query parameter in `Products` and synchronize category filter controls with it.
 - [ ] Unify `ProductDetails` cart/wishlist operations with the user-scoped storage convention (`cart_<userId>` and `wishlist_<userId>`). It currently uses global `cart` and `wishlist` keys, creating inconsistent shopper state.
 - [ ] Make login return the shopper to `location.state.from` when provided, rather than always returning to `/`.
 - [ ] Verify the full shopper flow manually: category → product → cart → checkout → order confirmation → order history.

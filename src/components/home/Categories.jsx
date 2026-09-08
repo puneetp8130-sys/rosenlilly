@@ -129,7 +129,7 @@ const Categories = () => {
 
             <Link
               key={category.id}
-              to={`/category/${category.slug}`}
+              to={`/flowers?category=${category.slug}`}
               className="group"
             >
 

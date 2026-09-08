@@ -102,28 +102,28 @@ const MainLayout = () => {
                 </Link>
 
                 <Link
-                  to="/category/roses"
+                  to="/flowers?category=roses"
                   className="block text-gray-400 hover:text-[#D916C7]"
                 >
                   Roses
                 </Link>
 
                 <Link
-                  to="/category/bouquets"
+                  to="/flowers?category=bouquets"
                   className="block text-gray-400 hover:text-[#D916C7]"
                 >
                   Bouquets
                 </Link>
 
                 <Link
-                  to="/category/lilies"
+                  to="/flowers?category=lilies"
                   className="block text-gray-400 hover:text-[#D916C7]"
                 >
                   Lilies
                 </Link>
 
                 <Link
-                  to="/category/sunflowers"
+                  to="/flowers?category=sunflowers"
                   className="block text-gray-400 hover:text-[#D916C7]"
                 >
                   Sunflowers

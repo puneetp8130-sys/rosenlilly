@@ -66,6 +66,8 @@ src/
 | `/cart`, `/wishlist` | Shopper state | Public, but actions require login |
 | `/profile`, `/orders`, `/orders/:orderId`, `/checkout`, `/order-success` | Account/order flows | Protected |
 
+Catalogue category browsing uses `/flowers?category=<catalogue-slug>`. The catalogue reads this parameter and keeps it synchronized when shoppers use its category controls. Birthday, anniversary, and offer navigation currently lead to the full catalogue because the static product data has no occasion or offer classifications.
+
 ## Known technical constraints
 
 - Authentication and passwords are not secure because they run entirely in the browser. Never treat the current implementation as production-ready authentication.

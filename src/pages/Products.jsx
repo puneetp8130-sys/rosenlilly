@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import products from "../data/products";
 import ProductCard from "../components/product/ProductCard";
 
@@ -34,10 +35,29 @@ const categories = [
 ];
 
 const Products = () => {
-  const [selectedCategory, setSelectedCategory] =
-    useState("all");
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+  const requestedCategory =
+    searchParams.get("category")?.toLowerCase() ||
+    "all";
+
+  const selectedCategory = categories.some(
+    (category) => category.slug === requestedCategory
+  )
+    ? requestedCategory
+    : "all";
 
   const [sort, setSort] = useState("featured");
+
+  const selectCategory = (category) => {
+    if (category === "all") {
+      setSearchParams({});
+      return;
+    }
+
+    setSearchParams({ category });
+  };
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -144,9 +164,7 @@ const Products = () => {
                 <button
                   key={category.slug}
                   onClick={() =>
-                    setSelectedCategory(
-                      category.slug
-                    )
+                    selectCategory(category.slug)
                   }
                   className={`
                     whitespace-nowrap
@@ -295,7 +313,7 @@ const Products = () => {
 
               <button
                 onClick={() =>
-                  setSelectedCategory("all")
+                  selectCategory("all")
                 }
                 className="
                   mt-6

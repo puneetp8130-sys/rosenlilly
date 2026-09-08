@@ -111,7 +111,7 @@ const Hero = () => {
 
 
               <Link
-                to="/category/roses"
+                to="/flowers?category=roses"
                 className="inline-flex
                            items-center
                            gap-2

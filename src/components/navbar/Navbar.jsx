@@ -309,21 +309,21 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/category/birthday"
+                to="/flowers"
                 className={navLinkClass}
               >
                 Birthday
               </NavLink>
 
               <NavLink
-                to="/category/anniversary"
+                to="/flowers"
                 className={navLinkClass}
               >
                 Anniversary
               </NavLink>
 
               <NavLink
-                to="/category/roses"
+                to="/flowers?category=roses"
                 className={navLinkClass}
               >
                 Roses
@@ -648,7 +648,7 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/category/birthday"
+                to="/flowers"
                 onClick={() =>
                   setMobileMenu(false)
                 }
@@ -664,7 +664,7 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/category/anniversary"
+                to="/flowers"
                 onClick={() =>
                   setMobileMenu(false)
                 }
@@ -680,7 +680,7 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/category/roses"
+                to="/flowers?category=roses"
                 onClick={() =>
                   setMobileMenu(false)
                 }
