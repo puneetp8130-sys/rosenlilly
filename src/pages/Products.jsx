@@ -34,6 +34,21 @@ const categories = [
   },
 ];
 
+const occasions = [
+  {
+    name: "All Occasions",
+    slug: "all",
+  },
+  {
+    name: "Birthday",
+    slug: "birthday",
+  },
+  {
+    name: "Anniversary",
+    slug: "anniversary",
+  },
+];
+
 const Products = () => {
   const [searchParams, setSearchParams] =
     useSearchParams();
@@ -48,15 +63,59 @@ const Products = () => {
     ? requestedCategory
     : "all";
 
+  const requestedOccasion =
+    searchParams.get("occasion")?.toLowerCase() ||
+    "all";
+
+  const selectedOccasion = occasions.some(
+    (occasion) => occasion.slug === requestedOccasion
+  )
+    ? requestedOccasion
+    : "all";
+
+  const selectedOffer =
+    searchParams.get("offer") === "true";
+
   const [sort, setSort] = useState("featured");
 
   const selectCategory = (category) => {
+    const nextParams = new URLSearchParams(searchParams);
+
     if (category === "all") {
-      setSearchParams({});
-      return;
+      nextParams.delete("category");
+    } else {
+      nextParams.set("category", category);
     }
 
-    setSearchParams({ category });
+    setSearchParams(nextParams);
+  };
+
+  const selectOccasion = (occasion) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (occasion === "all") {
+      nextParams.delete("occasion");
+    } else {
+      nextParams.set("occasion", occasion);
+    }
+
+    setSearchParams(nextParams);
+  };
+
+  const toggleOffer = () => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    if (selectedOffer) {
+      nextParams.delete("offer");
+    } else {
+      nextParams.set("offer", "true");
+    }
+
+    setSearchParams(nextParams);
+  };
+
+  const clearAllFilters = () => {
+    setSearchParams({});
   };
 
   const filteredProducts = useMemo(() => {
@@ -71,6 +130,32 @@ const Products = () => {
         (product) =>
           product.category?.toLowerCase() ===
           selectedCategory.toLowerCase()
+      );
+    }
+
+    // -------------------------------
+    // OCCASION FILTER
+    // -------------------------------
+
+    if (selectedOccasion !== "all") {
+      result = result.filter(
+        (product) =>
+          Array.isArray(product.occasions) &&
+          product.occasions.some(
+            (occasion) =>
+              occasion.toLowerCase() ===
+              selectedOccasion.toLowerCase()
+          )
+      );
+    }
+
+    // -------------------------------
+    // OFFER FILTER
+    // -------------------------------
+
+    if (selectedOffer) {
+      result = result.filter(
+        (product) => Boolean(product.offer)
       );
     }
 
@@ -109,7 +194,7 @@ const Products = () => {
     }
 
     return result;
-  }, [selectedCategory, sort]);
+  }, [selectedCategory, selectedOccasion, selectedOffer, sort]);
 
   return (
     <div className="min-h-screen bg-[#FCFAFF]">
@@ -153,7 +238,7 @@ const Products = () => {
               FILTER + SORT
           ======================================== */}
 
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-6">
 
             {/* Categories */}
 
@@ -240,6 +325,71 @@ const Products = () => {
 
 
           {/* ========================================
+              OCCASION + OFFER CONTROLS
+          ======================================== */}
+
+          <div className="flex flex-wrap items-center gap-2 mb-8">
+
+            <span className="text-sm font-medium text-[#756B82] mr-1">
+              Occasion:
+            </span>
+
+            {occasions.map((occasion) => (
+
+              <button
+                key={occasion.slug}
+                onClick={() =>
+                  selectOccasion(occasion.slug)
+                }
+                className={`
+                  whitespace-nowrap
+                  px-4
+                  py-2
+                  rounded-full
+                  text-sm
+                  font-semibold
+                  transition-all
+                  ${
+                    selectedOccasion ===
+                    occasion.slug
+                      ? "bg-[#9B5DE5] text-white shadow-md"
+                      : "bg-white border border-[#eee6f7] text-[#756B82] hover:border-[#9B5DE5] hover:text-[#9B5DE5]"
+                  }
+                `}
+              >
+                {occasion.name}
+              </button>
+
+            ))}
+
+            <span className="text-[#ddd3e8] mx-2">
+              |
+            </span>
+
+            <button
+              onClick={toggleOffer}
+              className={`
+                whitespace-nowrap
+                px-4
+                py-2
+                rounded-full
+                text-sm
+                font-semibold
+                transition-all
+                ${
+                  selectedOffer
+                    ? "bg-[#9B5DE5] text-white shadow-md"
+                    : "bg-white border border-[#eee6f7] text-[#756B82] hover:border-[#9B5DE5] hover:text-[#9B5DE5]"
+                }
+              `}
+            >
+              Offers
+            </button>
+
+          </div>
+
+
+          {/* ========================================
               PRODUCT COUNT
           ======================================== */}
 
@@ -307,14 +457,11 @@ const Products = () => {
               </h2>
 
               <p className="mt-2 text-[#756B82]">
-                We couldn't find flowers in this
-                category.
+                We couldn't find flowers matching your selection.
               </p>
 
               <button
-                onClick={() =>
-                  selectCategory("all")
-                }
+                onClick={clearAllFilters}
                 className="
                   mt-6
                   px-6

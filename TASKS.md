@@ -25,6 +25,7 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 
 - [x] Fix category navigation by standardizing catalogue-category links on `/flowers?category=<slug>`; unsupported occasion/offer links now lead to the full catalogue instead of a 404 page.
 - [x] Read the `category` query parameter in `Products` and synchronize category filter controls with it.
+- [x] Add working occasion (`/flowers?occasion=birthday`, `/flowers?occasion=anniversary`) and offer (`/flowers?offer=true`) catalogue filtering, synchronize UI filter controls with URL parameters, and connect navigation links.
 - [x] Unify `ProductDetails` cart/wishlist operations with the shared user-scoped storage helpers (`cart_<userId>` and `wishlist_<userId>`), including a login gate and sync on auth/cart/wishlist changes.
 - [x] Make login return the shopper to `location.state.from` when provided, otherwise return to `/`.
 - [ ] Verify the full shopper flow manually: category → product → cart → checkout → order confirmation → order history.

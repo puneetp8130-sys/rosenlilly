@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import {
   Link,
   NavLink,
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -185,12 +187,40 @@ const Navbar = () => {
   // NAV LINK STYLE
   // =====================================================
 
-  const navLinkClass = ({ isActive }) =>
+  const isLinkActive = (to) => {
+    if (to === "/") {
+      return location.pathname === "/" && !location.search;
+    }
+    if (to === "/flowers") {
+      return location.pathname === "/flowers" && !location.search;
+    }
+    if (to.includes("?")) {
+      const [path, query] = to.split("?");
+      if (location.pathname !== path) return false;
+      const targetParams = new URLSearchParams(query);
+      const currentParams = new URLSearchParams(location.search);
+      for (const [key, val] of targetParams.entries()) {
+        if (currentParams.get(key) !== val) return false;
+      }
+      return true;
+    }
+    return location.pathname === to;
+  };
+
+  const getNavLinkClass = (to) =>
     `transition ${
-      isActive
+      isLinkActive(to)
         ? "text-[#9B5DE5] font-semibold"
         : "text-[#4F465A] hover:text-[#9B5DE5]"
     }`;
+
+  const getMobileNavLinkClass = (to) =>
+    `block px-4 py-3 rounded-xl ${
+      isLinkActive(to)
+        ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
+        : "text-[#4F465A]"
+    }`;
+
 
   // =====================================================
   // RETURN
@@ -296,35 +326,35 @@ const Navbar = () => {
             >
               <NavLink
                 to="/"
-                className={navLinkClass}
+                className={getNavLinkClass("/")}
               >
                 Home
               </NavLink>
 
               <NavLink
                 to="/flowers"
-                className={navLinkClass}
+                className={getNavLinkClass("/flowers")}
               >
                 Flowers
               </NavLink>
 
               <NavLink
-                to="/flowers"
-                className={navLinkClass}
+                to="/flowers?occasion=birthday"
+                className={getNavLinkClass("/flowers?occasion=birthday")}
               >
                 Birthday
               </NavLink>
 
               <NavLink
-                to="/flowers"
-                className={navLinkClass}
+                to="/flowers?occasion=anniversary"
+                className={getNavLinkClass("/flowers?occasion=anniversary")}
               >
                 Anniversary
               </NavLink>
 
               <NavLink
                 to="/flowers?category=roses"
-                className={navLinkClass}
+                className={getNavLinkClass("/flowers?category=roses")}
               >
                 Roses
               </NavLink>
@@ -620,12 +650,8 @@ const Navbar = () => {
                 onClick={() =>
                   setMobileMenu(false)
                 }
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-                      : "text-[#4F465A]"
-                  }`
+                className={
+                  getMobileNavLinkClass("/")
                 }
               >
                 🏠 Home
@@ -636,44 +662,32 @@ const Navbar = () => {
                 onClick={() =>
                   setMobileMenu(false)
                 }
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-                      : "text-[#4F465A]"
-                  }`
+                className={
+                  getMobileNavLinkClass("/flowers")
                 }
               >
                 🌸 Flowers
               </NavLink>
 
               <NavLink
-                to="/flowers"
+                to="/flowers?occasion=birthday"
                 onClick={() =>
                   setMobileMenu(false)
                 }
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-                      : "text-[#4F465A]"
-                  }`
+                className={
+                  getMobileNavLinkClass("/flowers?occasion=birthday")
                 }
               >
                 🎂 Birthday
               </NavLink>
 
               <NavLink
-                to="/flowers"
+                to="/flowers?occasion=anniversary"
                 onClick={() =>
                   setMobileMenu(false)
                 }
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-                      : "text-[#4F465A]"
-                  }`
+                className={
+                  getMobileNavLinkClass("/flowers?occasion=anniversary")
                 }
               >
                 💕 Anniversary
@@ -684,12 +698,8 @@ const Navbar = () => {
                 onClick={() =>
                   setMobileMenu(false)
                 }
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl ${
-                    isActive
-                      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-                      : "text-[#4F465A]"
-                  }`
+                className={
+                  getMobileNavLinkClass("/flowers?category=roses")
                 }
               >
                 🌹 Roses

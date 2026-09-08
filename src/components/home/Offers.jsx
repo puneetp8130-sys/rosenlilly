@@ -68,7 +68,7 @@ const Offers = () => {
 
               {/* CTA */}
               <Link
-                to="/flowers"
+                to="/flowers?offer=true"
                 className="inline-flex items-center gap-2 mt-8 px-7 py-3.5 rounded-full bg-white text-[#7B3FB3] font-bold hover:bg-[#E7FAEF] hover:-translate-y-0.5"
               >
                 Shop The Offer

@@ -66,7 +66,7 @@ src/
 | `/cart`, `/wishlist` | Shopper state | Public, but actions require login |
 | `/profile`, `/orders`, `/orders/:orderId`, `/checkout`, `/order-success` | Account/order flows | Protected |
 
-Catalogue category browsing uses `/flowers?category=<catalogue-slug>`. The catalogue reads this parameter and keeps it synchronized when shoppers use its category controls. Birthday, anniversary, and offer navigation currently lead to the full catalogue because the static product data has no occasion or offer classifications.
+Catalogue browsing supports `category` (`/flowers?category=<slug>`), `occasion` (`/flowers?occasion=<birthday|anniversary>`), and `offer` (`/flowers?offer=true`). Filters are intentionally combinable (e.g., selecting a category maintains any active occasion and offer filters, and vice versa). Selecting "All" or toggling off a filter clears only that specific parameter, while the empty-state action resets all filters. Static product data in `src/data/products.js` classifies items with `occasions` (`["birthday"]`, `["anniversary"]`) and a single canonical boolean `offer` field determined by a defensible discount rule (`(oldPrice - price) / oldPrice >= 0.22`).
 
 ## Known technical constraints
 
