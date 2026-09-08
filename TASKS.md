@@ -25,15 +25,15 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 
 - [x] Fix category navigation by standardizing catalogue-category links on `/flowers?category=<slug>`; unsupported occasion/offer links now lead to the full catalogue instead of a 404 page.
 - [x] Read the `category` query parameter in `Products` and synchronize category filter controls with it.
-- [ ] Unify `ProductDetails` cart/wishlist operations with the user-scoped storage convention (`cart_<userId>` and `wishlist_<userId>`). It currently uses global `cart` and `wishlist` keys, creating inconsistent shopper state.
-- [ ] Make login return the shopper to `location.state.from` when provided, rather than always returning to `/`.
+- [x] Unify `ProductDetails` cart/wishlist operations with the shared user-scoped storage helpers (`cart_<userId>` and `wishlist_<userId>`), including a login gate and sync on auth/cart/wishlist changes.
+- [x] Make login return the shopper to `location.state.from` when provided, otherwise return to `/`.
 - [ ] Verify the full shopper flow manually: category → product → cart → checkout → order confirmation → order history.
 
 ## Quality and maintainability
 
 - [ ] Restore a clean `npm run lint`. Current issues include unused React imports, unused variables, and hook/state-effect rule violations.
 - [ ] Replace malformed Tailwind arbitrary-value classes such as `min-h-[<560px>]` and `aspect-[<4/5>]` with valid Tailwind syntax; verify affected responsive layouts visually.
-- [ ] Remove debug `console.log` statements from routing/layout/auth guard components.
+- [x] Remove confirmed debug `console.log` statements from routing, layout, and auth-guard components.
 - [ ] Consolidate duplicated localStorage parsing and custom-event dispatching through `src/utils/storage.js`.
 - [ ] Decide whether to adopt Redux. If it is not needed, remove the empty `src/redux` scaffolding; if it is needed, install/configure Redux Toolkit and migrate state deliberately.
 - [ ] Either implement or remove empty placeholders: `src/services/api.js`, common UI components, and unused component files.

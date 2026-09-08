@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Link,
   useLocation,
@@ -212,11 +212,14 @@ const Login = () => {
       // REDIRECT
       // ==================================================
 
-    setLoading(false);
+      const destination =
+        location.state?.from || "/";
 
-    navigate("/", {
+      setLoading(false);
+
+      navigate(destination, {
         replace: true,
-    });
+      });
 
     } catch (error) {
       console.error(

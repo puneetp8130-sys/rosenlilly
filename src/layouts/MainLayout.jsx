@@ -1,10 +1,8 @@
-import React from "react";
 import { Outlet, Link } from "react-router-dom";
 
 import Navbar from "../components/navbar/Navbar";
 
 const MainLayout = () => {
-  console.log("🔥 MAIN LAYOUT RENDERED");
   return (
     <div className="min-h-screen flex flex-col bg-[#FCFAFF] text-[#29213A]">
 

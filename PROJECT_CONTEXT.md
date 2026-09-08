@@ -17,7 +17,7 @@ The project is currently a front-end prototype. It has no server, database, paym
 
 ## Runtime architecture
 
-`src/main.jsx` creates the React root, wraps the app in `BrowserRouter`, and imports global styles. `src/App.jsx` renders `AppRoutes` and the toaster.
+`src/main.jsx` creates the React root, wraps the app in `BrowserRouter` using Vite's `BASE_URL` as its basename, and imports global styles. `src/App.jsx` renders `AppRoutes` and the toaster. This keeps client-side routing aligned with the `/rosenlilly` deployment base.
 
 `src/routes/AppRoutes.jsx` defines public and protected page routes. `src/layouts/MainLayout.jsx` provides the offer bar, navbar, page outlet, and footer shared by the routed pages.
 
@@ -37,7 +37,7 @@ The application currently uses browser `localStorage` rather than Redux or an AP
 
 Custom browser events (`authChange`, `cartChange`, `wishlistChange`, `ordersChange`, and `userChange`) keep some components in sync.
 
-`src/utils/storage.js` contains shared helpers for current-user cart/wishlist access, but not every page uses them yet.
+`src/utils/storage.js` contains shared helpers for current-user cart/wishlist access. Product details now uses these helpers; other pages still contain duplicated browser-storage logic that should be consolidated later.
 
 ## Directory guide
 

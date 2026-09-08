@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
@@ -27,8 +26,6 @@ import NotFound from "../pages/NotFound";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 const AppRoutes = () => {
-  console.log("🔥 APP ROUTES RENDERED");
-
   return (
     <Routes>
 

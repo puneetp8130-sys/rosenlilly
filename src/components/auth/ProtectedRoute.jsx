@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Navigate,
   Outlet,
@@ -10,9 +9,6 @@ const ProtectedRoute = () => {
 
   const currentUser =
     localStorage.getItem("currentUser");
-
-  console.log("🔥 PROTECTED ROUTE CHECK");
-  console.log("🔥 CURRENT USER:", currentUser);
 
   if (!currentUser) {
     return (

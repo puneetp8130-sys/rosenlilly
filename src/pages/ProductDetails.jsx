@@ -1,11 +1,25 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import toast from "react-hot-toast";
 
 import products from "../data/products";
+import {
+  getCurrentUser,
+  getUserCart,
+  getUserWishlist,
+  saveUserCart,
+  saveUserWishlist,
+} from "../utils/storage";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // ==========================================
   // FIND PRODUCT
@@ -22,7 +36,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
 
   const [selectedImage, setSelectedImage] =
-    useState(product?.image || "");
+    useState(null);
 
   const [cartQuantity, setCartQuantity] =
     useState(0);
@@ -45,20 +59,21 @@ const ProductDetails = () => {
     return [...new Set(images)];
   }, [product]);
 
+  const displayedImage = productImages.includes(
+    selectedImage
+  )
+    ? selectedImage
+    : product?.image || "";
+
   // ==========================================
   // LOAD CART + WISHLIST
   // ==========================================
 
-  const syncProductState = () => {
+  const syncProductState = useCallback(() => {
     if (!product) return;
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart") || "[]"
-    );
-
-    const wishlist = JSON.parse(
-      localStorage.getItem("wishlist") || "[]"
-    );
+    const cart = getUserCart();
+    const wishlist = getUserWishlist();
 
     const cartProduct = cart.find(
       (item) =>
@@ -78,16 +93,14 @@ const ProductDetails = () => {
           String(product.id)
       )
     );
-  };
-
-  useEffect(() => {
-    if (product) {
-      setSelectedImage(product.image || "");
-      syncProductState();
-    }
   }, [product]);
 
   useEffect(() => {
+    const syncTimer = window.setTimeout(
+      syncProductState,
+      0
+    );
+
     window.addEventListener(
       "cartChange",
       syncProductState
@@ -98,7 +111,14 @@ const ProductDetails = () => {
       syncProductState
     );
 
+    window.addEventListener(
+      "authChange",
+      syncProductState
+    );
+
     return () => {
+      window.clearTimeout(syncTimer);
+
       window.removeEventListener(
         "cartChange",
         syncProductState
@@ -108,19 +128,42 @@ const ProductDetails = () => {
         "wishlistChange",
         syncProductState
       );
+
+      window.removeEventListener(
+        "authChange",
+        syncProductState
+      );
     };
-  }, [product]);
+  }, [syncProductState]);
+
+  const requireLogin = () => {
+    if (getCurrentUser()?.id) {
+      return true;
+    }
+
+    toast.error("Please login first");
+
+    navigate("/login", {
+      state: {
+        from: {
+          pathname: location.pathname,
+          search: location.search,
+          hash: location.hash,
+        },
+      },
+    });
+
+    return false;
+  };
 
   // ==========================================
   // CART
   // ==========================================
 
   const addToCart = () => {
-    if (!product) return;
+    if (!product || !requireLogin()) return;
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart") || "[]"
-    );
+    const cart = getUserCart();
 
     const existingProduct = cart.find(
       (item) =>
@@ -150,18 +193,11 @@ const ProductDetails = () => {
       ];
     }
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
+    saveUserCart(updatedCart);
 
     setCartQuantity((prev) => prev + quantity);
 
     setQuantity(1);
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
 
     toast.success("Added to cart 🛒");
   };
@@ -171,11 +207,9 @@ const ProductDetails = () => {
   // ==========================================
 
   const updateCartQuantity = (newQuantity) => {
-    if (!product) return;
+    if (!product || !requireLogin()) return;
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart") || "[]"
-    );
+    const cart = getUserCart();
 
     let updatedCart;
 
@@ -202,14 +236,7 @@ const ProductDetails = () => {
       setCartQuantity(newQuantity);
     }
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
+    saveUserCart(updatedCart);
   };
 
   // ==========================================
@@ -217,11 +244,9 @@ const ProductDetails = () => {
   // ==========================================
 
   const toggleWishlist = () => {
-    if (!product) return;
+    if (!product || !requireLogin()) return;
 
-    const wishlist = JSON.parse(
-      localStorage.getItem("wishlist") || "[]"
-    );
+    const wishlist = getUserWishlist();
 
     const alreadyExists = wishlist.some(
       (item) =>
@@ -256,14 +281,7 @@ const ProductDetails = () => {
       );
     }
 
-    localStorage.setItem(
-      "wishlist",
-      JSON.stringify(updatedWishlist)
-    );
-
-    window.dispatchEvent(
-      new Event("wishlistChange")
-    );
+    saveUserWishlist(updatedWishlist);
   };
 
   // ==========================================
@@ -450,7 +468,7 @@ const ProductDetails = () => {
             >
 
               <img
-                src={selectedImage}
+                src={displayedImage}
                 alt={product.name}
                 className="
                   w-full
@@ -537,7 +555,7 @@ const ProductDetails = () => {
                         border-2
                         transition
                         ${
-                          selectedImage === image
+                          displayedImage === image
                             ? "border-[#9B5DE5]"
                             : "border-transparent"
                         }
