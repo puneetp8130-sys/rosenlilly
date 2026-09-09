@@ -6,12 +6,19 @@ const OrderSuccess = () => {
 
   const orderId = searchParams.get("orderId");
 
+  const currentUser = JSON.parse(
+    localStorage.getItem("currentUser") || "null"
+  );
+
   const orders = JSON.parse(
     localStorage.getItem("orders") || "[]"
   );
 
   const order = orders.find(
-    (item) => item.id === orderId
+    (item) =>
+      item.id === orderId &&
+      currentUser?.id &&
+      String(item.userId) === String(currentUser.id)
   );
 
   return (
