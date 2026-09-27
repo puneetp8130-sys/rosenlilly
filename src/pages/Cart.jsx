@@ -1,15 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Cart = () => {
   const navigate = useNavigate();
 
-  const [cart, setCart] = useState([]);
-
-  // ==========================================
-  // CURRENT USER
-  // ==========================================
+// ==========================================
+// CURRENT USER
+// ==========================================
 
   const getCurrentUser = () => {
     try {
@@ -24,23 +22,34 @@ const Cart = () => {
     }
   };
 
+  const [cart, setCart] = useState(() => {
+    const user = getCurrentUser();
+
+    if (!user?.id) {
+      return [];
+    }
+
+    try {
+      const savedCart = JSON.parse(
+        localStorage.getItem(`cart_${user.id}`) || "[]"
+      );
+
+      return Array.isArray(savedCart) ? savedCart : [];
+    } catch (error) {
+      console.error("Failed to load cart:", error);
+      return [];
+    }
+  });
+
   const [currentUser, setCurrentUser] = useState(
-  getCurrentUser()
+    getCurrentUser()
   );
-
-  // ==========================================
-  // USER-SPECIFIC CART KEY
-  // ==========================================
-
-  const cartKey = currentUser
-    ? `cart_${currentUser.id}`
-    : null;
 
   // ==========================================
   // LOAD CART
   // ==========================================
 
-  const loadCart = () => {
+  const loadCart = useCallback(() => {
     const user = getCurrentUser();
 
     if (!user || !user.id) {
@@ -64,60 +73,58 @@ const Cart = () => {
       console.error("Failed to load cart:", error);
       setCart([]);
     }
-  };
+  },[]);
 
   // ==========================================
   // LOAD WHEN USER / CART CHANGES
   // ==========================================
 
   useEffect(() => {
-  const handleAuthChange = () => {
-    const user = getCurrentUser();
+    const handleAuthChange = () => {
+      const user = getCurrentUser();
 
-    setCurrentUser(user);
+      setCurrentUser(user);
 
-    if (!user?.id) {
-      setCart([]);
-      return;
-    }
+      if (!user?.id) {
+        setCart([]);
+        return;
+      }
 
-    loadCart();
-  };
+      loadCart();
+    };
 
-  loadCart();
-
-  window.addEventListener(
-    "cartChange",
-    loadCart
-  );
-
-  window.addEventListener(
-    "authChange",
-    handleAuthChange
-  );
-
-  window.addEventListener(
-    "storage",
-    handleAuthChange
-  );
-
-  return () => {
-    window.removeEventListener(
+    window.addEventListener(
       "cartChange",
       loadCart
     );
 
-    window.removeEventListener(
+    window.addEventListener(
       "authChange",
       handleAuthChange
     );
 
-    window.removeEventListener(
+    window.addEventListener(
       "storage",
       handleAuthChange
     );
-  };
-}, []);
+
+    return () => {
+      window.removeEventListener(
+        "cartChange",
+        loadCart
+      );
+
+      window.removeEventListener(
+        "authChange",
+        handleAuthChange
+      );
+
+      window.removeEventListener(
+        "storage",
+        handleAuthChange
+      );
+    };
+  }, [loadCart]);
   // ==========================================
   // SAVE CART
   // ==========================================
@@ -218,7 +225,7 @@ const Cart = () => {
       (total, item) =>
         total +
         Number(item.price || 0) *
-          Number(item.quantity || 1),
+        Number(item.quantity || 1),
       0
     );
   }, [cart]);
@@ -275,29 +282,29 @@ const Cart = () => {
   // ==========================================
 
   const handleCheckout = () => {
-  const user = getCurrentUser();
+    const user = getCurrentUser();
 
-  if (!user?.id) {
-    toast.error("Please login to continue");
+    if (!user?.id) {
+      toast.error("Please login to continue");
 
-    navigate("/login", {
-      state: {
-        from: {
-          pathname: "/checkout",
+      navigate("/login", {
+        state: {
+          from: {
+            pathname: "/checkout",
+          },
         },
-      },
-    });
+      });
 
-    return;
-  }
+      return;
+    }
 
-  if (!cart.length) {
-    toast.error("Your cart is empty");
-    return;
-  }
+    if (!cart.length) {
+      toast.error("Your cart is empty");
+      return;
+    }
 
-  navigate("/checkout");
-};
+    navigate("/checkout");
+  };
 
   // ==========================================
   // EMPTY CART

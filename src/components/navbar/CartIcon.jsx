@@ -1,10 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { getUserCart } from "../../utils/storage";
 
 const CartIcon = () => {
-  const cart = JSON.parse(
-    localStorage.getItem("cart") || "[]"
-  );
+  const cart = getUserCart();
 
   const count = cart.reduce(
     (total, item) => total + (item.quantity || 1),

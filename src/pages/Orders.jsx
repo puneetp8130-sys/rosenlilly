@@ -1,4 +1,5 @@
-import React, {
+import {
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -43,7 +44,7 @@ const Orders = () => {
   // LOAD CURRENT USER ORDERS
   // ==================================================
 
-  const loadOrders = () => {
+  const loadOrders = useCallback(() => {
     try {
       const currentUser =
         getCurrentUser();
@@ -56,7 +57,7 @@ const Orders = () => {
         setOrders([]);
         setLoading(false);
         return;
-      }
+      };
 
       // ----------------------------------------------
       // LOAD ALL ORDERS
@@ -99,15 +100,13 @@ const Orders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // ==================================================
   // LOAD + LISTEN
   // ==================================================
 
   useEffect(() => {
-    loadOrders();
-
     window.addEventListener(
       "ordersChange",
       loadOrders
@@ -129,7 +128,7 @@ const Orders = () => {
         loadOrders
       );
     };
-  }, []);
+  }, [loadOrders]);
 
   // ==================================================
   // CURRENT USER
@@ -445,10 +444,10 @@ const Orders = () => {
                 )
                   ? order.items
                   : Array.isArray(
-                      order.products
-                    )
-                  ? order.products
-                  : [];
+                    order.products
+                  )
+                    ? order.products
+                    : [];
 
               // ------------------------------------------
               // DATE
@@ -457,8 +456,8 @@ const Orders = () => {
               const orderDate =
                 order.createdAt
                   ? new Date(
-                      order.createdAt
-                    )
+                    order.createdAt
+                  )
                   : null;
 
               const validDate =
@@ -490,7 +489,7 @@ const Orders = () => {
                     return (
                       sum +
                       price *
-                        quantity
+                      quantity
                     );
                   },
                   0
@@ -502,10 +501,10 @@ const Orders = () => {
 
               const subtotal =
                 order.subtotal !==
-                undefined
+                  undefined
                   ? Number(
-                      order.subtotal
-                    )
+                    order.subtotal
+                  )
                   : calculatedSubtotal;
 
               // ------------------------------------------
@@ -527,12 +526,12 @@ const Orders = () => {
 
               const originalSubtotal =
                 order.originalSubtotal !==
-                undefined
+                  undefined
                   ? Number(
-                      order.originalSubtotal
-                    )
+                    order.originalSubtotal
+                  )
                   : subtotal +
-                    discount;
+                  discount;
 
               // ------------------------------------------
               // DELIVERY
@@ -541,7 +540,7 @@ const Orders = () => {
               const delivery =
                 Number(
                   order.deliveryCharge ??
-                    0
+                  0
                 );
 
               // ------------------------------------------
@@ -557,10 +556,10 @@ const Orders = () => {
 
               const total =
                 order.total !==
-                undefined
+                  undefined
                   ? Number(
-                      order.total
-                    )
+                    order.total
+                  )
                   : calculatedTotal;
 
               // ------------------------------------------
@@ -571,15 +570,15 @@ const Orders = () => {
                 order.paymentMethod ||
                 (
                   order.payment ===
-                  "cod"
+                    "cod"
                     ? "Cash on Delivery"
                     : order.payment ===
                       "card"
-                    ? "Credit / Debit Card"
-                    : order.payment ===
-                      "upi"
-                    ? "UPI"
-                    : "Cash on Delivery"
+                      ? "Credit / Debit Card"
+                      : order.payment ===
+                        "upi"
+                        ? "UPI"
+                        : "Cash on Delivery"
                 );
 
               return (
@@ -637,13 +636,13 @@ const Orders = () => {
                       <p className="text-sm font-semibold text-[#29213A]">
                         {validDate
                           ? orderDate.toLocaleDateString(
-                              "en-IN",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
                           : "Date unavailable"}
                       </p>
 
@@ -662,11 +661,10 @@ const Orders = () => {
                           text-xs
                           font-semibold
 
-                          ${
-                            order.status ===
+                          ${order.status ===
                             "Cancelled"
-                              ? "bg-red-50 text-red-600"
-                              : "bg-green-50 text-green-600"
+                            ? "bg-red-50 text-red-600"
+                            : "bg-green-50 text-green-600"
                           }
                         `}
                       >
@@ -685,7 +683,7 @@ const Orders = () => {
                   <div className="p-5 space-y-4">
 
                     {items.length >
-                    0 ? (
+                      0 ? (
                       items.map(
                         (
                           item,
@@ -843,53 +841,53 @@ const Orders = () => {
 
                         {discount >
                           0 && (
-                          <div
-                            className="
+                            <div
+                              className="
                               flex
                               justify-between
                               text-sm
                             "
-                          >
+                            >
 
-                            <span className="text-[#756B82]">
-                              Original Price
-                            </span>
+                              <span className="text-[#756B82]">
+                                Original Price
+                              </span>
 
-                            <span className="font-semibold text-[#29213A]">
-                              ₹
-                              {originalSubtotal.toLocaleString(
-                                "en-IN"
-                              )}
-                            </span>
+                              <span className="font-semibold text-[#29213A]">
+                                ₹
+                                {originalSubtotal.toLocaleString(
+                                  "en-IN"
+                                )}
+                              </span>
 
-                          </div>
-                        )}
+                            </div>
+                          )}
 
                         {/* DISCOUNT */}
 
                         {discount >
                           0 && (
-                          <div
-                            className="
+                            <div
+                              className="
                               flex
                               justify-between
                               text-sm
                             "
-                          >
+                            >
 
-                            <span className="text-[#756B82]">
-                              Discount
-                            </span>
+                              <span className="text-[#756B82]">
+                                Discount
+                              </span>
 
-                            <span className="font-semibold text-green-600">
-                              - ₹
-                              {discount.toLocaleString(
-                                "en-IN"
-                              )}
-                            </span>
+                              <span className="font-semibold text-green-600">
+                                - ₹
+                                {discount.toLocaleString(
+                                  "en-IN"
+                                )}
+                              </span>
 
-                          </div>
-                        )}
+                            </div>
+                          )}
 
                         {/* SUBTOTAL */}
 
@@ -930,11 +928,11 @@ const Orders = () => {
 
                           <span className="font-semibold text-[#29213A]">
                             {delivery ===
-                            0
+                              0
                               ? "FREE"
                               : `₹${delivery.toLocaleString(
-                                  "en-IN"
-                                )}`}
+                                "en-IN"
+                              )}`}
                           </span>
 
                         </div>

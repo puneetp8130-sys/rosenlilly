@@ -1,32 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-
-
-// =====================================================
-// GET CURRENT USER
-// =====================================================
-
-const getCurrentUser = () => {
-  try {
-    return JSON.parse(
-      localStorage.getItem("currentUser") || "null"
-    );
-  } catch {
-    return null;
-  }
-};
-
-
-// =====================================================
-// USER SPECIFIC STORAGE KEYS
-// =====================================================
-
-const getWishlistKey = (userId) =>
-  `wishlist_${userId}`;
-
-const getCartKey = (userId) =>
-  `cart_${userId}`;
+import {
+  getCurrentUser,
+  getUserWishlist,
+  getUserCart,
+  saveUserWishlist,
+  saveUserCart,
+  getCartKey,
+} from "../utils/storage";
 
 const Wishlist = () => {
 
@@ -38,65 +20,55 @@ const Wishlist = () => {
   // LOAD USER DATA
   // =====================================================
 
-const loadData = () => {
-  const currentUser = getCurrentUser();
+  const loadData = () => {
+    const currentUser = getCurrentUser();
 
-  // User login nahi hai
-  if (!currentUser?.id) {
-    setWishlist([]);
-    setCart([]);
-    return;
-  }
-
-  const wishlistKey = getWishlistKey(
-    currentUser.id
-  );
-
-  const cartKey = getCartKey(
-    currentUser.id
-  );
-
-  let savedWishlist = [];
-  let savedCart = [];
-
-  try {
-    savedWishlist = JSON.parse(
-      localStorage.getItem(wishlistKey) || "[]"
-    );
-
-    savedCart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
-
-    if (!Array.isArray(savedWishlist)) {
-      savedWishlist = [];
+    // User login nahi hai
+    if (!currentUser?.id) {
+      setWishlist([]);
+      setCart([]);
+      return;
     }
 
-    if (!Array.isArray(savedCart)) {
-      savedCart = [];
+    const wishlistKey = getUserWishlist();
+
+    const cartKey = getUserCart();
+
+    try {
+      const savedWishlist = JSON.parse(
+        localStorage.getItem(wishlistKey) || "[]"
+      );
+
+      const savedCart = JSON.parse(
+        localStorage.getItem(cartKey) || "[]"
+      );
+
+      setWishlist(
+        Array.isArray(savedWishlist)
+          ? savedWishlist
+          : []
+      );
+
+      setCart(
+        Array.isArray(savedCart)
+          ? savedCart : []
+      );
+    } catch (error) {
+      console.error(
+        "Wishlist/Cart load error:",
+        error
+      );
+
+      setWishlist([]);
+      setCart([]);
     }
-  } catch (error) {
-    console.error(
-      "Wishlist/Cart load error:",
-      error
-    );
-
-    savedWishlist = [];
-    savedCart = [];
-  }
-
-  setWishlist(savedWishlist);
-  setCart(savedCart);
-};
+  };
 
   // =====================================================
   // LISTEN FOR CHANGES
   // =====================================================
-  
+
   useEffect(() => {
-
-    loadData();
-
     window.addEventListener(
       "wishlistChange",
       loadData
@@ -131,7 +103,6 @@ const loadData = () => {
       );
 
     };
-
   }, []);
 
   // =====================================================
@@ -152,73 +123,57 @@ const loadData = () => {
 
   const addToCart = (product) => {
 
-  const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser();
 
-  if (!currentUser?.id) {
-    toast.error("Please login first");
-    return;
-  }
+    if (!currentUser?.id) {
+      toast.error("Please login first");
+      return;
+    }
 
-
-  const cartKey = getCartKey(
-    currentUser.id
-  );
+    const currentCart = getUserCart();
 
 
-  const currentCart = JSON.parse(
-    localStorage.getItem(cartKey) || "[]"
-  );
+    const existingProduct = currentCart.find(
+      (item) => item.id === product.id
+    );
 
 
-  const existingProduct = currentCart.find(
-    (item) => item.id === product.id
-  );
+    let updatedCart;
 
 
-  let updatedCart;
+    if (existingProduct) {
 
-
-  if (existingProduct) {
-
-    updatedCart = currentCart.map((item) =>
-      item.id === product.id
-        ? {
+      updatedCart = currentCart.map((item) =>
+        item.id === product.id
+          ? {
             ...item,
             quantity:
               Number(item.quantity || 0) + 1,
           }
-        : item
-    );
+          : item
+      );
 
-  } else {
+    } else {
 
-    updatedCart = [
-      ...currentCart,
-      {
-        ...product,
-        quantity: 1,
-      },
-    ];
+      updatedCart = [
+        ...currentCart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
 
-  }
-
-
-  localStorage.setItem(
-    cartKey,
-    JSON.stringify(updatedCart)
-  );
+    }
 
 
-  setCart(updatedCart);
+    saveUserCart(updatedCart);
+
+    setCart(updatedCart);
 
 
-  window.dispatchEvent(
-    new Event("cartChange")
-  );
 
-
-  toast.success("Added to cart 🛒");
-};
+    toast.success("Added to cart 🛒");
+  };
 
   // =====================================================
   // INCREASE QUANTITY
@@ -226,49 +181,49 @@ const loadData = () => {
 
   const increaseQuantity = (id) => {
 
-  const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser();
 
-  if (!currentUser?.id) {
-    toast.error("Please login first");
-    return;
-  }
-
-
-  const cartKey = getCartKey(
-    currentUser.id
-  );
+    if (!currentUser?.id) {
+      toast.error("Please login first");
+      return;
+    }
 
 
-  const currentCart = JSON.parse(
-    localStorage.getItem(cartKey) || "[]"
-  );
+    const cartKey = getCartKey(
+      currentUser.id
+    );
 
 
-  const updatedCart = currentCart.map(
-    (item) =>
-      item.id === id
-        ? {
+    const currentCart = JSON.parse(
+      localStorage.getItem(cartKey) || "[]"
+    );
+
+
+    const updatedCart = currentCart.map(
+      (item) =>
+        item.id === id
+          ? {
             ...item,
             quantity:
               Number(item.quantity || 0) + 1,
           }
-        : item
-  );
+          : item
+    );
 
 
-  localStorage.setItem(
-    cartKey,
-    JSON.stringify(updatedCart)
-  );
+    localStorage.setItem(
+      cartKey,
+      JSON.stringify(updatedCart)
+    );
 
 
-  setCart(updatedCart);
+    setCart(updatedCart);
 
 
-  window.dispatchEvent(
-    new Event("cartChange")
-  );
-};
+    window.dispatchEvent(
+      new Event("cartChange")
+    );
+  };
 
   // =====================================================
   // DECREASE QUANTITY
@@ -276,80 +231,80 @@ const loadData = () => {
 
   const decreaseQuantity = (id) => {
 
-  const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser();
 
-  if (!currentUser?.id) {
-    toast.error("Please login first");
-    return;
-  }
-
-
-  const cartKey = getCartKey(
-    currentUser.id
-  );
+    if (!currentUser?.id) {
+      toast.error("Please login first");
+      return;
+    }
 
 
-  const currentCart = JSON.parse(
-    localStorage.getItem(cartKey) || "[]"
-  );
-
-
-  const existingProduct = currentCart.find(
-    (item) => item.id === id
-  );
-
-
-  if (!existingProduct) return;
-
-
-  const currentQuantity = Number(
-    existingProduct.quantity || 1
-  );
-
-
-  let updatedCart;
-
-
-  if (currentQuantity <= 1) {
-
-    updatedCart = currentCart.filter(
-      (item) => item.id !== id
+    const cartKey = getCartKey(
+      currentUser.id
     );
 
-  } else {
 
-    updatedCart = currentCart.map(
-      (item) =>
-        item.id === id
-          ? {
+    const currentCart = JSON.parse(
+      localStorage.getItem(cartKey) || "[]"
+    );
+
+
+    const existingProduct = currentCart.find(
+      (item) => item.id === id
+    );
+
+
+    if (!existingProduct) return;
+
+
+    const currentQuantity = Number(
+      existingProduct.quantity || 1
+    );
+
+
+    let updatedCart;
+
+
+    if (currentQuantity <= 1) {
+
+      updatedCart = currentCart.filter(
+        (item) => item.id !== id
+      );
+
+    } else {
+
+      updatedCart = currentCart.map(
+        (item) =>
+          item.id === id
+            ? {
               ...item,
               quantity:
                 currentQuantity - 1,
             }
-          : item
+            : item
+      );
+
+    }
+
+
+    localStorage.setItem(
+      cartKey,
+      JSON.stringify(updatedCart)
     );
 
-  }
+
+    setCart(updatedCart);
 
 
-  localStorage.setItem(
-    cartKey,
-    JSON.stringify(updatedCart)
-  );
+    window.dispatchEvent(
+      new Event("cartChange")
+    );
 
 
-  setCart(updatedCart);
-
-
-  window.dispatchEvent(
-    new Event("cartChange")
-  );
-
-
-  if (currentQuantity <= 1) {
-    toast.success("Removed from cart");
-  }
-};
+    if (currentQuantity <= 1) {
+      toast.success("Removed from cart");
+    }
+  };
 
   // =====================================================
   // REMOVE FROM WISHLIST
@@ -357,40 +312,24 @@ const loadData = () => {
 
   const removeFromWishlist = (id) => {
 
-  const currentUser = getCurrentUser();
+    const currentUser = getCurrentUser();
 
-  if (!currentUser?.id) {
-    toast.error("Please login first");
-    return;
-  }
+    if (!currentUser?.id) {
+      toast.error("Please login first");
+      return;
+    }
 
-
-  const wishlistKey = getWishlistKey(
-    currentUser.id
-  );
-
-
-  const updatedWishlist = wishlist.filter(
-    (item) => item.id !== id
-  );
+    const updatedWishlist = wishlist.filter(
+      (item) => item.id !== id
+    );
 
 
-  localStorage.setItem(
-    wishlistKey,
-    JSON.stringify(updatedWishlist)
-  );
+    saveUserWishlist(updatedWishlist);
 
+    setWishlist(updatedWishlist);
 
-  setWishlist(updatedWishlist);
-
-
-  window.dispatchEvent(
-    new Event("wishlistChange")
-  );
-
-
-  toast.success("Removed from wishlist");
-};
+    toast.success("Removed from wishlist");
+  };
 
   // =====================================================
   // EMPTY WISHLIST
@@ -558,10 +497,10 @@ const loadData = () => {
             const discount =
               originalPrice > price
                 ? Math.round(
-                    ((originalPrice - price) /
-                      originalPrice) *
-                      100
-                  )
+                  ((originalPrice - price) /
+                    originalPrice) *
+                  100
+                )
                 : 0;
 
             return (

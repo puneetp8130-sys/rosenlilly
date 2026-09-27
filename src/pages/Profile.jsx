@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  getCurrentUser,
+  getUserCart,
+  getUserWishlist,
+  logoutUser,
+} from "../utils/storage";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Profile = () => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() =>
+    getCurrentUser()
+  );
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,14 +37,6 @@ const Profile = () => {
       navigate("/login");
       return;
     }
-
-    setUser(savedUser);
-
-    setFormData({
-      name: savedUser.name || "",
-      email: savedUser.email || "",
-      phone: savedUser.phone || "",
-    });
   }, [navigate]);
 
   // ==========================================
@@ -65,12 +65,12 @@ const Profile = () => {
       return;
     }
 
-  const updatedUser = {
-    ...user,
-    name: formData.name.trim(),
-    email: formData.email.trim(),
-    phone: formData.phone.trim(),
-  };
+    const updatedUser = {
+      ...user,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+    };
 
     localStorage.setItem(
       "currentUser",
@@ -80,6 +80,7 @@ const Profile = () => {
     setUser(updatedUser);
     setIsEditing(false);
 
+    logoutUser();
     // Navbar ko update karne ke liye
     window.dispatchEvent(
       new Event("userChange")
@@ -93,19 +94,11 @@ const Profile = () => {
   // ==========================================
 
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-
-    window.dispatchEvent(
-      new Event("authChange")
-    );
-
-    window.dispatchEvent(
-      new Event("userChange")
-    );
+    logoutUser();
 
     //toast.success("Logged out successfully");
 
-    navigate("/login",{
+    navigate("/login", {
       replace: true,
     });
   };
@@ -117,19 +110,15 @@ const Profile = () => {
   const userId = user?.id;
 
   const cart = userId
-    ? JSON.parse(
-        localStorage.getItem(`cart_${userId}`) || "[]"
-      )
+    ? getUserCart()
     : [];
 
   const wishlist = userId
-    ? JSON.parse(
-        localStorage.getItem(`wishlist_${userId}`) || "[]"
-      )
+    ? getUserWishlist()
     : [];
 
   const orders = userId
-  ? (() => {
+    ? (() => {
       try {
         const allOrders = JSON.parse(
           localStorage.getItem("orders") || "[]"
@@ -148,8 +137,8 @@ const Profile = () => {
         return [];
       }
     })()
-  : [];
-  
+    : [];
+
   // ==========================================
   // LOADING
   // ==========================================

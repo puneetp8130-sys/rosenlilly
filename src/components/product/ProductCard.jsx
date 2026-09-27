@@ -1,27 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import {
+  getCurrentUser,
+  getUserCart,
+  saveUserCart,
+  getUserWishlist,
+  saveUserWishlist,
+} from "../../utils/storage";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
-
-  // =====================================================
-  // CURRENT USER
-  // =====================================================
-
-  const getCurrentUser = () => {
-    try {
-      return JSON.parse(
-        localStorage.getItem("currentUser") || "null"
-      );
-    } catch (error) {
-      console.error("Error reading currentUser:", error);
-      return null;
-    }
-  };
 
   // =====================================================
   // LOAD PRODUCT STATE
@@ -38,19 +30,8 @@ const ProductCard = ({ product }) => {
         return;
       }
 
-      // USER-SPECIFIC CART
-      const cartKey = `cart_${currentUser.id}`;
-
-      const cart = JSON.parse(
-        localStorage.getItem(cartKey) || "[]"
-      );
-
-      // USER-SPECIFIC WISHLIST
-      const wishlistKey = `wishlist_${currentUser.id}`;
-
-      const wishlist = JSON.parse(
-        localStorage.getItem(wishlistKey) || "[]"
-      );
+      const cart = getUserCart();
+      const wishlist = getUserWishlist();
 
       const cartProduct = cart.find(
         (item) => String(item.id) === String(product.id)
@@ -136,13 +117,7 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    const currentUser = getCurrentUser();
-
-    const cartKey = `cart_${currentUser.id}`;
-
-    const cart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
+    const cart = getUserCart();
 
     const existingProduct = cart.find(
       (item) =>
@@ -155,10 +130,10 @@ const ProductCard = ({ product }) => {
       updatedCart = cart.map((item) =>
         String(item.id) === String(product.id)
           ? {
-              ...item,
-              quantity:
-                Number(item.quantity || 0) + 1,
-            }
+            ...item,
+            quantity:
+              Number(item.quantity || 0) + 1,
+          }
           : item
       );
     } else {
@@ -171,10 +146,7 @@ const ProductCard = ({ product }) => {
       ];
     }
 
-    localStorage.setItem(
-      cartKey,
-      JSON.stringify(updatedCart)
-    );
+    saveUserCart(updatedCart);
 
     const updatedProduct = updatedCart.find(
       (item) =>
@@ -212,10 +184,10 @@ const ProductCard = ({ product }) => {
     const updatedCart = cart.map((item) =>
       String(item.id) === String(product.id)
         ? {
-            ...item,
-            quantity:
-              Number(item.quantity || 0) + 1,
-          }
+          ...item,
+          quantity:
+            Number(item.quantity || 0) + 1,
+        }
         : item
     );
 
@@ -298,9 +270,9 @@ const ProductCard = ({ product }) => {
     const updatedCart = cart.map((item) =>
       String(item.id) === String(product.id)
         ? {
-            ...item,
-            quantity: currentQuantity - 1,
-          }
+          ...item,
+          quantity: currentQuantity - 1,
+        }
         : item
     );
 
@@ -325,14 +297,7 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    const currentUser = getCurrentUser();
-
-    const wishlistKey =
-      `wishlist_${currentUser.id}`;
-
-    const wishlist = JSON.parse(
-      localStorage.getItem(wishlistKey) || "[]"
-    );
+    const wishlist = getUserWishlist();
 
     const alreadyExists = wishlist.some(
       (item) =>
@@ -365,10 +330,7 @@ const ProductCard = ({ product }) => {
       );
     }
 
-    localStorage.setItem(
-      wishlistKey,
-      JSON.stringify(updatedWishlist)
-    );
+    saveUserWishlist(updatedWishlist);
 
     window.dispatchEvent(
       new Event("wishlistChange")
@@ -385,17 +347,17 @@ const ProductCard = ({ product }) => {
 
   const originalPrice = Number(
     product.originalPrice ||
-      product.oldPrice ||
-      0
+    product.oldPrice ||
+    0
   );
 
   const discount =
     originalPrice > price
       ? Math.round(
-          ((originalPrice - price) /
-            originalPrice) *
-            100
-        )
+        ((originalPrice - price) /
+          originalPrice) *
+        100
+      )
       : 0;
 
   // =====================================================

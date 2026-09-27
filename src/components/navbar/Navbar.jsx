@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Link,
   NavLink,
@@ -7,13 +7,37 @@ import {
 } from "react-router-dom";
 import toast from "react-hot-toast";
 
+import {
+  getCurrentUser,
+  getUserCart,
+  getUserWishlist,
+  logoutUser,
+} from "../../utils/storage";
+
+const getCartItemCount = (cart) =>
+  cart.reduce(
+    (total, item) => total + Number(item.quantity || 1),
+    0
+  );
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const [currentUser, setCurrentUser] = useState(null);
+  const initialUser = getCurrentUser();
+  const initialCart = initialUser ? getUserCart() : [];
+  const initialWishlist = initialUser
+    ? getUserWishlist()
+    : [];
+
+  const [cartCount, setCartCount] = useState(
+    getCartItemCount(initialCart)
+  );
+  const [wishlistCount, setWishlistCount] = useState(
+    initialWishlist.length
+  );
+  const [currentUser, setCurrentUser] =
+    useState(initialUser);
   const [mobileMenu, setMobileMenu] = useState(false);
 
   // =====================================================
@@ -21,24 +45,9 @@ const Navbar = () => {
   // =====================================================
 
   const loadNavbarData = () => {
-    let user = null;
-
-    try {
-      user = JSON.parse(
-        localStorage.getItem("currentUser") || "null"
-      );
-    } catch (error) {
-      console.error(
-        "Error reading currentUser:",
-        error
-      );
-    }
+    const user = getCurrentUser();
 
     setCurrentUser(user);
-
-    // -----------------------------------------------
-    // NO USER = NO CART / NO WISHLIST COUNT
-    // -----------------------------------------------
 
     if (!user?.id) {
       setCartCount(0);
@@ -46,66 +55,18 @@ const Navbar = () => {
       return;
     }
 
-    // -----------------------------------------------
-    // USER-SPECIFIC CART
-    // -----------------------------------------------
+    const cart = getUserCart();
+    const wishlist = getUserWishlist();
 
-    let cart = [];
-
-    try {
-      cart = JSON.parse(
-        localStorage.getItem(
-          `cart_${user.id}`
-        ) || "[]"
-      );
-    } catch (error) {
-      console.error(
-        "Error reading cart:",
-        error
-      );
-
-      cart = [];
-    }
-
-    const totalCartItems = cart.reduce(
-      (total, item) =>
-        total + Number(item.quantity || 1),
-      0
-    );
-
-    setCartCount(totalCartItems);
-
-    // -----------------------------------------------
-    // USER-SPECIFIC WISHLIST
-    // -----------------------------------------------
-
-    let wishlist = [];
-
-    try {
-      wishlist = JSON.parse(
-        localStorage.getItem(
-          `wishlist_${user.id}`
-        ) || "[]"
-      );
-    } catch (error) {
-      console.error(
-        "Error reading wishlist:",
-        error
-      );
-
-      wishlist = [];
-    }
-
+    setCartCount(getCartItemCount(cart));
     setWishlistCount(wishlist.length);
   };
 
   // =====================================================
-  // INITIAL LOAD + EVENTS
+  // EVENTS
   // =====================================================
 
   useEffect(() => {
-    loadNavbarData();
-
     window.addEventListener(
       "cartChange",
       loadNavbarData
@@ -154,29 +115,14 @@ const Navbar = () => {
   // =====================================================
 
   const handleLogout = () => {
-    localStorage.removeItem("currentUser");
+    logoutUser();
 
     setCurrentUser(null);
     setCartCount(0);
     setWishlistCount(0);
-
-    window.dispatchEvent(
-      new Event("authChange")
-    );
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
-
-    window.dispatchEvent(
-      new Event("wishlistChange")
-    );
-
-    toast.success(
-      "Logged out successfully"
-    );
-
     setMobileMenu(false);
+
+    toast.success("Logged out successfully");
 
     navigate("/", {
       replace: true,
@@ -189,38 +135,54 @@ const Navbar = () => {
 
   const isLinkActive = (to) => {
     if (to === "/") {
-      return location.pathname === "/" && !location.search;
+      return (
+        location.pathname === "/" &&
+        !location.search
+      );
     }
+
     if (to === "/flowers") {
-      return location.pathname === "/flowers" && !location.search;
+      return (
+        location.pathname === "/flowers" &&
+        !location.search
+      );
     }
+
     if (to.includes("?")) {
       const [path, query] = to.split("?");
-      if (location.pathname !== path) return false;
-      const targetParams = new URLSearchParams(query);
-      const currentParams = new URLSearchParams(location.search);
-      for (const [key, val] of targetParams.entries()) {
-        if (currentParams.get(key) !== val) return false;
+
+      if (location.pathname !== path) {
+        return false;
       }
+
+      const targetParams = new URLSearchParams(query);
+      const currentParams = new URLSearchParams(
+        location.search
+      );
+
+      for (const [key, val] of targetParams.entries()) {
+        if (currentParams.get(key) !== val) {
+          return false;
+        }
+      }
+
       return true;
     }
+
     return location.pathname === to;
   };
 
   const getNavLinkClass = (to) =>
-    `transition ${
-      isLinkActive(to)
-        ? "text-[#9B5DE5] font-semibold"
-        : "text-[#4F465A] hover:text-[#9B5DE5]"
+    `transition ${isLinkActive(to)
+      ? "text-[#9B5DE5] font-semibold"
+      : "text-[#4F465A] hover:text-[#9B5DE5]"
     }`;
 
   const getMobileNavLinkClass = (to) =>
-    `block px-4 py-3 rounded-xl ${
-      isLinkActive(to)
-        ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
-        : "text-[#4F465A]"
+    `block px-4 py-3 rounded-xl ${isLinkActive(to)
+      ? "bg-[#F7EEFF] text-[#9B5DE5] font-semibold"
+      : "text-[#4F465A]"
     }`;
-
 
   // =====================================================
   // RETURN
@@ -228,10 +190,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* =================================================
-          NAVBAR
-      ================================================= */}
-
       <header
         className="
           sticky
@@ -260,7 +218,6 @@ const Navbar = () => {
               justify-between
             "
           >
-
             {/* =================================================
                 LOGO
             ================================================= */}
@@ -268,9 +225,7 @@ const Navbar = () => {
             <Link
               to="/"
               className="flex items-center gap-2"
-              onClick={() =>
-                setMobileMenu(false)
-              }
+              onClick={() => setMobileMenu(false)}
             >
               <div
                 className="
@@ -340,21 +295,27 @@ const Navbar = () => {
 
               <NavLink
                 to="/flowers?occasion=birthday"
-                className={getNavLinkClass("/flowers?occasion=birthday")}
+                className={getNavLinkClass(
+                  "/flowers?occasion=birthday"
+                )}
               >
                 Birthday
               </NavLink>
 
               <NavLink
                 to="/flowers?occasion=anniversary"
-                className={getNavLinkClass("/flowers?occasion=anniversary")}
+                className={getNavLinkClass(
+                  "/flowers?occasion=anniversary"
+                )}
               >
                 Anniversary
               </NavLink>
 
               <NavLink
                 to="/flowers?category=roses"
-                className={getNavLinkClass("/flowers?category=roses")}
+                className={getNavLinkClass(
+                  "/flowers?category=roses"
+                )}
               >
                 Roses
               </NavLink>
@@ -372,7 +333,6 @@ const Navbar = () => {
                 sm:gap-3
               "
             >
-
               {/* SEARCH */}
 
               <Link
@@ -532,10 +492,7 @@ const Navbar = () => {
                         text-sm
                       "
                     >
-                      {(
-                        currentUser.name ||
-                        "U"
-                      )
+                      {(currentUser.name || "U")
                         .charAt(0)
                         .toUpperCase()}
                     </div>
@@ -551,8 +508,7 @@ const Navbar = () => {
                         text-[#29213A]
                       "
                     >
-                      {currentUser.name ||
-                        "Account"}
+                      {currentUser.name || "Account"}
                     </span>
                   </Link>
 
@@ -601,9 +557,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setMobileMenu(
-                    (prev) => !prev
-                  )
+                  setMobileMenu((prev) => !prev)
                 }
                 className="
                   md:hidden
@@ -647,60 +601,46 @@ const Navbar = () => {
             >
               <NavLink
                 to="/"
-                onClick={() =>
-                  setMobileMenu(false)
-                }
-                className={
-                  getMobileNavLinkClass("/")
-                }
+                onClick={() => setMobileMenu(false)}
+                className={getMobileNavLinkClass("/")}
               >
                 🏠 Home
               </NavLink>
 
               <NavLink
                 to="/flowers"
-                onClick={() =>
-                  setMobileMenu(false)
-                }
-                className={
-                  getMobileNavLinkClass("/flowers")
-                }
+                onClick={() => setMobileMenu(false)}
+                className={getMobileNavLinkClass("/flowers")}
               >
                 🌸 Flowers
               </NavLink>
 
               <NavLink
                 to="/flowers?occasion=birthday"
-                onClick={() =>
-                  setMobileMenu(false)
-                }
-                className={
-                  getMobileNavLinkClass("/flowers?occasion=birthday")
-                }
+                onClick={() => setMobileMenu(false)}
+                className={getMobileNavLinkClass(
+                  "/flowers?occasion=birthday"
+                )}
               >
                 🎂 Birthday
               </NavLink>
 
               <NavLink
                 to="/flowers?occasion=anniversary"
-                onClick={() =>
-                  setMobileMenu(false)
-                }
-                className={
-                  getMobileNavLinkClass("/flowers?occasion=anniversary")
-                }
+                onClick={() => setMobileMenu(false)}
+                className={getMobileNavLinkClass(
+                  "/flowers?occasion=anniversary"
+                )}
               >
                 💕 Anniversary
               </NavLink>
 
               <NavLink
                 to="/flowers?category=roses"
-                onClick={() =>
-                  setMobileMenu(false)
-                }
-                className={
-                  getMobileNavLinkClass("/flowers?category=roses")
-                }
+                onClick={() => setMobileMenu(false)}
+                className={getMobileNavLinkClass(
+                  "/flowers?category=roses"
+                )}
               >
                 🌹 Roses
               </NavLink>

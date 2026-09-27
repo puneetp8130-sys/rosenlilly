@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 const OrderDetails = () => {
@@ -27,6 +27,27 @@ const OrderDetails = () => {
   };
 
   const currentUser = getCurrentUser();
+
+  // ==================================================
+  // LOAD ALL ORDERS
+  // ==================================================
+
+  let orders = [];
+
+  try {
+    const savedOrders = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
+
+    orders = Array.isArray(savedOrders)
+      ? savedOrders
+      : [];
+  } catch (error) {
+    console.error(
+      "Error loading orders:",
+      error
+    );
+  }
 
   // ==================================================
   // LOGIN REQUIRED
@@ -80,28 +101,6 @@ const OrderDetails = () => {
     );
   }
 
-  // ==================================================
-  // LOAD ALL ORDERS
-  // ==================================================
-
-  let orders = [];
-
-  try {
-    const savedOrders = JSON.parse(
-      localStorage.getItem("orders") || "[]"
-    );
-
-    orders = Array.isArray(savedOrders)
-      ? savedOrders
-      : [];
-  } catch (error) {
-    console.error(
-      "Error loading orders:",
-      error
-    );
-
-    orders = [];
-  }
 
   // ==================================================
   // FIND CURRENT USER ORDER
@@ -114,7 +113,7 @@ const OrderDetails = () => {
         String(item.orderId) === String(orderId)
       ) &&
       String(item.userId) ===
-        String(currentUser.id)
+      String(currentUser.id)
   );
 
   // ==================================================
@@ -170,8 +169,8 @@ const OrderDetails = () => {
     Array.isArray(order.items)
       ? order.items
       : Array.isArray(order.products)
-      ? order.products
-      : [];
+        ? order.products
+        : [];
 
   // ==================================================
   // ORDER ID
@@ -272,9 +271,8 @@ const OrderDetails = () => {
   // ==================================================
 
   const customerName =
-    `${address.firstName || ""} ${
-      address.lastName || ""
-    }`.trim() ||
+    `${address.firstName || ""} ${address.lastName || ""
+      }`.trim() ||
     address.name ||
     order.userName ||
     currentUser.name ||
@@ -310,10 +308,10 @@ const OrderDetails = () => {
       order.payment === "cod"
         ? "Cash on Delivery"
         : order.payment === "card"
-        ? "Credit / Debit Card"
-        : order.payment === "upi"
-        ? "UPI"
-        : order.payment
+          ? "Credit / Debit Card"
+          : order.payment === "upi"
+            ? "UPI"
+            : order.payment
     ) ||
     "Cash on Delivery";
 
@@ -461,10 +459,9 @@ const OrderDetails = () => {
                 text-sm
                 font-semibold
 
-                ${
-                  status === "Cancelled"
-                    ? "bg-red-50 text-red-600"
-                    : "bg-[#F0E5FF] text-[#7B3FB3]"
+                ${status === "Cancelled"
+                  ? "bg-red-50 text-red-600"
+                  : "bg-[#F0E5FF] text-[#7B3FB3]"
                 }
               `}
             >
@@ -536,10 +533,9 @@ const OrderDetails = () => {
                       justify-center
                       font-bold
 
-                      ${
-                        currentStep >= 1
-                          ? "bg-[#9B5DE5] text-white"
-                          : "bg-[#eee6f7] text-[#756B82]"
+                      ${currentStep >= 1
+                        ? "bg-[#9B5DE5] text-white"
+                        : "bg-[#eee6f7] text-[#756B82]"
                       }
                     `}
                   >
@@ -569,10 +565,9 @@ const OrderDetails = () => {
                       justify-center
                       font-bold
 
-                      ${
-                        currentStep >= 2
-                          ? "bg-[#9B5DE5] text-white"
-                          : "bg-[#eee6f7] text-[#756B82]"
+                      ${currentStep >= 2
+                        ? "bg-[#9B5DE5] text-white"
+                        : "bg-[#eee6f7] text-[#756B82]"
                       }
                     `}
                   >
@@ -602,10 +597,9 @@ const OrderDetails = () => {
                       justify-center
                       font-bold
 
-                      ${
-                        currentStep >= 3
-                          ? "bg-[#9B5DE5] text-white"
-                          : "bg-[#eee6f7] text-[#756B82]"
+                      ${currentStep >= 3
+                        ? "bg-[#9B5DE5] text-white"
+                        : "bg-[#eee6f7] text-[#756B82]"
                       }
                     `}
                   >
@@ -635,10 +629,9 @@ const OrderDetails = () => {
                       justify-center
                       font-bold
 
-                      ${
-                        currentStep >= 4
-                          ? "bg-[#9B5DE5] text-white"
-                          : "bg-[#eee6f7] text-[#756B82]"
+                      ${currentStep >= 4
+                        ? "bg-[#9B5DE5] text-white"
+                        : "bg-[#eee6f7] text-[#756B82]"
                       }
                     `}
                   >
@@ -901,17 +894,17 @@ const OrderDetails = () => {
 
                   {(address.city ||
                     address.state) && (
-                    <p>
-                      {address.city || ""}
+                      <p>
+                        {address.city || ""}
 
-                      {address.city &&
-                      address.state
-                        ? ", "
-                        : ""}
+                        {address.city &&
+                          address.state
+                          ? ", "
+                          : ""}
 
-                      {address.state || ""}
-                    </p>
-                  )}
+                        {address.state || ""}
+                      </p>
+                    )}
 
                   {address.pincode && (
                     <p>
@@ -992,8 +985,8 @@ const OrderDetails = () => {
                     <span className="font-semibold text-green-600">
                       {discount > 0
                         ? `- ₹${formatPrice(
-                            discount
-                          )}`
+                          discount
+                        )}`
                         : "₹0"}
                     </span>
 
@@ -1011,8 +1004,8 @@ const OrderDetails = () => {
                       {delivery === 0
                         ? "FREE"
                         : `₹${formatPrice(
-                            delivery
-                          )}`}
+                          delivery
+                        )}`}
                     </span>
 
                   </div>
