@@ -1,30 +1,10 @@
 
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { getCurrentUser, getOrders } from "../utils/storage";
 
 const OrderDetails = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-
-  // ==================================================
-  // GET CURRENT USER
-  // ==================================================
-
-  const getCurrentUser = () => {
-    try {
-      const user = JSON.parse(
-        localStorage.getItem("currentUser") || "null"
-      );
-
-      return user;
-    } catch (error) {
-      console.error(
-        "Error loading current user:",
-        error
-      );
-
-      return null;
-    }
-  };
 
   const currentUser = getCurrentUser();
 
@@ -32,22 +12,7 @@ const OrderDetails = () => {
   // LOAD ALL ORDERS
   // ==================================================
 
-  let orders = [];
-
-  try {
-    const savedOrders = JSON.parse(
-      localStorage.getItem("orders") || "[]"
-    );
-
-    orders = Array.isArray(savedOrders)
-      ? savedOrders
-      : [];
-  } catch (error) {
-    console.error(
-      "Error loading orders:",
-      error
-    );
-  }
+  const orders = getOrders();
 
   // ==================================================
   // LOGIN REQUIRED

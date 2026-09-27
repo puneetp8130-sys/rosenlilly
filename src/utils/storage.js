@@ -1,5 +1,5 @@
 // ==========================================
-// AUTH
+// AUTH / CURRENT USER
 // ==========================================
 
 export const getCurrentUser = () => {
@@ -15,6 +15,27 @@ export const getCurrentUser = () => {
   }
 };
 
+export const setCurrentUser = (user) => {
+  try {
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify(user)
+    );
+
+    window.dispatchEvent(
+      new Event("authChange")
+    );
+
+    window.dispatchEvent(
+      new Event("userChange")
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error saving currentUser:", error);
+    return false;
+  }
+};
 
 // ==========================================
 // USER KEY
@@ -30,17 +51,46 @@ const getUserKey = () => {
   return user.id;
 };
 
+// ==========================================
+// USERS COLLECTION
+// ==========================================
+
+export const getUsers = () => {
+  try {
+    const users = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+
+    return Array.isArray(users) ? users : [];
+  } catch (error) {
+    console.error("Error reading users:", error);
+    return [];
+  }
+};
+
+export const saveUsers = (users) => {
+  try {
+    localStorage.setItem(
+      "users",
+      JSON.stringify(users)
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error saving users:", error);
+    return false;
+  }
+};
 
 // ==========================================
 // CART
 // ==========================================
 
-export const getCartKey = () => {
-  const userId = getUserKey();
+export const getCartKey = (customUserId) => {
+  const userId = customUserId || getUserKey();
 
   return userId ? `cart_${userId}` : null;
 };
-
 
 export const getUserCart = () => {
   const key = getCartKey();
@@ -50,15 +100,16 @@ export const getUserCart = () => {
   }
 
   try {
-    return JSON.parse(
+    const cart = JSON.parse(
       localStorage.getItem(key) || "[]"
     );
+
+    return Array.isArray(cart) ? cart : [];
   } catch (error) {
     console.error("Error reading cart:", error);
     return [];
   }
 };
-
 
 export const saveUserCart = (cart) => {
   const key = getCartKey();
@@ -79,17 +130,31 @@ export const saveUserCart = (cart) => {
   return true;
 };
 
+export const clearUserCart = () => {
+  const key = getCartKey();
+
+  if (!key) {
+    return false;
+  }
+
+  localStorage.removeItem(key);
+
+  window.dispatchEvent(
+    new Event("cartChange")
+  );
+
+  return true;
+};
 
 // ==========================================
 // WISHLIST
 // ==========================================
 
-export const getWishlistKey = () => {
-  const userId = getUserKey();
+export const getWishlistKey = (customUserId) => {
+  const userId = customUserId || getUserKey();
 
   return userId ? `wishlist_${userId}` : null;
 };
-
 
 export const getUserWishlist = () => {
   const key = getWishlistKey();
@@ -99,9 +164,11 @@ export const getUserWishlist = () => {
   }
 
   try {
-    return JSON.parse(
+    const wishlist = JSON.parse(
       localStorage.getItem(key) || "[]"
     );
+
+    return Array.isArray(wishlist) ? wishlist : [];
   } catch (error) {
     console.error(
       "Error reading wishlist:",
@@ -111,7 +178,6 @@ export const getUserWishlist = () => {
     return [];
   }
 };
-
 
 export const saveUserWishlist = (wishlist) => {
   const key = getWishlistKey();
@@ -132,6 +198,54 @@ export const saveUserWishlist = (wishlist) => {
   return true;
 };
 
+// ==========================================
+// ORDERS
+// ==========================================
+
+export const getOrders = () => {
+  try {
+    const orders = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
+
+    return Array.isArray(orders) ? orders : [];
+  } catch (error) {
+    console.error("Error reading orders:", error);
+    return [];
+  }
+};
+
+export const saveOrders = (orders) => {
+  try {
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(orders)
+    );
+
+    window.dispatchEvent(
+      new Event("ordersChange")
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Error saving orders:", error);
+    return false;
+  }
+};
+
+export const getUserOrders = (userId) => {
+  const targetUserId = userId ?? getCurrentUser()?.id;
+
+  if (!targetUserId) {
+    return [];
+  }
+
+  const orders = getOrders();
+
+  return orders.filter(
+    (order) => String(order.userId) === String(targetUserId)
+  );
+};
 
 // ==========================================
 // LOGOUT

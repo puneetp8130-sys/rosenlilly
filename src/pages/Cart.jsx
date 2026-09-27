@@ -1,47 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import {
+  getCurrentUser,
+  getUserCart,
+  saveUserCart,
+  clearUserCart,
+} from "../utils/storage";
 
 const Cart = () => {
   const navigate = useNavigate();
 
-// ==========================================
-// CURRENT USER
-// ==========================================
-
-  const getCurrentUser = () => {
-    try {
-      const user = JSON.parse(
-        localStorage.getItem("currentUser") || "null"
-      );
-
-      return user;
-    } catch (error) {
-      console.error("Failed to read currentUser:", error);
-      return null;
-    }
-  };
-
   const [cart, setCart] = useState(() => {
-    const user = getCurrentUser();
-
-    if (!user?.id) {
-      return [];
-    }
-
-    try {
-      const savedCart = JSON.parse(
-        localStorage.getItem(`cart_${user.id}`) || "[]"
-      );
-
-      return Array.isArray(savedCart) ? savedCart : [];
-    } catch (error) {
-      console.error("Failed to load cart:", error);
-      return [];
-    }
+    return getUserCart();
   });
 
-  const [currentUser, setCurrentUser] = useState(
+  const [currentUser, setCurrentUser] = useState(() =>
     getCurrentUser()
   );
 
@@ -57,23 +31,8 @@ const Cart = () => {
       return;
     }
 
-    const key = `cart_${user.id}`;
-
-    try {
-      const savedCart = JSON.parse(
-        localStorage.getItem(key) || "[]"
-      );
-
-      setCart(
-        Array.isArray(savedCart)
-          ? savedCart
-          : []
-      );
-    } catch (error) {
-      console.error("Failed to load cart:", error);
-      setCart([]);
-    }
-  },[]);
+    setCart(getUserCart());
+  }, []);
 
   // ==========================================
   // LOAD WHEN USER / CART CHANGES
@@ -138,18 +97,8 @@ const Cart = () => {
       return;
     }
 
-    const key = `cart_${user.id}`;
-
-    localStorage.setItem(
-      key,
-      JSON.stringify(updatedCart)
-    );
-
+    saveUserCart(updatedCart);
     setCart(updatedCart);
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
   };
 
   // ==========================================
@@ -203,16 +152,8 @@ const Cart = () => {
       return;
     }
 
-    localStorage.removeItem(
-      `cart_${currentUser.id}`
-    );
-
+    clearUserCart();
     setCart([]);
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
-
     toast.success("Cart cleared");
   };
 

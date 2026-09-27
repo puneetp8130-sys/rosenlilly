@@ -5,6 +5,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getUsers, setCurrentUser } from "../utils/storage";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -105,12 +106,7 @@ const Login = () => {
       // GET USERS
       // ==================================================
 
-      const storedUsers =
-        localStorage.getItem("users");
-
-      const users = storedUsers
-        ? JSON.parse(storedUsers)
-        : [];
+      const users = getUsers();
 
       // Make sure users is an array
       if (!Array.isArray(users)) {
@@ -181,22 +177,7 @@ const Login = () => {
       // SAVE CURRENT USER
       // ==================================================
 
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(currentUser)
-      );
-
-      // ==================================================
-      // NOTIFY OTHER COMPONENTS
-      // ==================================================
-
-      window.dispatchEvent(
-        new Event("authChange")
-      );
-
-      window.dispatchEvent(
-        new Event("userChange")
-      );
+      setCurrentUser(currentUser);
 
       // ==================================================
       // SUCCESS TOAST

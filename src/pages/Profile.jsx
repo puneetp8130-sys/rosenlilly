@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import {
   getCurrentUser,
+  setCurrentUser,
   getUserCart,
   getUserWishlist,
+  getUserOrders,
   logoutUser,
 } from "../utils/storage";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,9 +30,7 @@ const Profile = () => {
   // ==========================================
 
   useEffect(() => {
-    const savedUser = JSON.parse(
-      localStorage.getItem("currentUser") || "null"
-    );
+    const savedUser = getCurrentUser();
 
     if (!savedUser) {
       toast.error("Please login first");
@@ -72,19 +72,10 @@ const Profile = () => {
       phone: formData.phone.trim(),
     };
 
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify(updatedUser)
-    );
+    setCurrentUser(updatedUser);
 
     setUser(updatedUser);
     setIsEditing(false);
-
-    logoutUser();
-    // Navbar ko update karne ke liye
-    window.dispatchEvent(
-      new Event("userChange")
-    );
 
     toast.success("Profile updated successfully");
   };
@@ -118,25 +109,7 @@ const Profile = () => {
     : [];
 
   const orders = userId
-    ? (() => {
-      try {
-        const allOrders = JSON.parse(
-          localStorage.getItem("orders") || "[]"
-        );
-
-        if (!Array.isArray(allOrders)) {
-          return [];
-        }
-
-        return allOrders.filter(
-          (order) =>
-            String(order.userId) === String(userId)
-        );
-      } catch (error) {
-        console.error("Failed to load orders:", error);
-        return [];
-      }
-    })()
+    ? getUserOrders(userId)
     : [];
 
   // ==========================================

@@ -35,7 +35,7 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 - [ ] Restore a clean `npm run lint`. Current issues include unused React imports, unused variables, and hook/state-effect rule violations.
 - [ ] Replace malformed Tailwind arbitrary-value classes such as `min-h-[<560px>]` and `aspect-[<4/5>]` with valid Tailwind syntax; verify affected responsive layouts visually.
 - [x] Remove confirmed debug `console.log` statements from routing, layout, and auth-guard components.
-- [ ] Consolidate duplicated localStorage parsing and custom-event dispatching through `src/utils/storage.js`.
+- [x] Consolidate duplicated localStorage parsing and custom-event dispatching through `src/utils/storage.js`.
 - [ ] Decide whether to adopt Redux. If it is not needed, remove the empty `src/redux` scaffolding; if it is needed, install/configure Redux Toolkit and migrate state deliberately.
 - [ ] Either implement or remove empty placeholders: `src/services/api.js`, common UI components, and unused component files.
 - [ ] Replace the default Vite README with setup, architecture, testing, and deployment documentation.

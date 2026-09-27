@@ -3,12 +3,12 @@ import {
   Outlet,
   useLocation,
 } from "react-router-dom";
+import { getCurrentUser } from "../../utils/storage";
 
 const ProtectedRoute = () => {
   const location = useLocation();
 
-  const currentUser =
-    localStorage.getItem("currentUser");
+  const currentUser = getCurrentUser();
 
   if (!currentUser) {
     return (

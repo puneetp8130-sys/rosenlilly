@@ -8,6 +8,7 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
+import { getCurrentUser, getUserOrders } from "../utils/storage";
 
 // ==================================================
 // ORDERS
@@ -20,34 +21,12 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
 
   // ==================================================
-  // GET CURRENT USER
-  // ==================================================
-
-  const getCurrentUser = () => {
-    try {
-      const user = JSON.parse(
-        localStorage.getItem("currentUser") || "null"
-      );
-
-      return user;
-    } catch (error) {
-      console.error(
-        "Error reading current user:",
-        error
-      );
-
-      return null;
-    }
-  };
-
-  // ==================================================
   // LOAD CURRENT USER ORDERS
   // ==================================================
 
   const loadOrders = useCallback(() => {
     try {
-      const currentUser =
-        getCurrentUser();
+      const currentUser = getCurrentUser();
 
       // ----------------------------------------------
       // LOGIN CHECK
@@ -57,39 +36,9 @@ const Orders = () => {
         setOrders([]);
         setLoading(false);
         return;
-      };
-
-      // ----------------------------------------------
-      // LOAD ALL ORDERS
-      // ----------------------------------------------
-
-      const savedOrders =
-        JSON.parse(
-          localStorage.getItem(
-            "orders"
-          ) || "[]"
-        );
-
-      if (
-        !Array.isArray(savedOrders)
-      ) {
-        setOrders([]);
-        setLoading(false);
-        return;
       }
 
-      // ----------------------------------------------
-      // CURRENT USER ORDERS ONLY
-      // ----------------------------------------------
-
-      const userOrders =
-        savedOrders.filter(
-          (order) =>
-            String(order.userId) ===
-            String(currentUser.id)
-        );
-
-      setOrders(userOrders);
+      setOrders(getUserOrders(currentUser.id));
     } catch (error) {
       console.error(
         "Error loading orders:",

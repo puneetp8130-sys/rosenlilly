@@ -7,7 +7,6 @@ import {
   getUserCart,
   saveUserWishlist,
   saveUserCart,
-  getCartKey,
 } from "../utils/storage";
 
 const Wishlist = () => {
@@ -30,38 +29,8 @@ const Wishlist = () => {
       return;
     }
 
-    const wishlistKey = getUserWishlist();
-
-    const cartKey = getUserCart();
-
-    try {
-      const savedWishlist = JSON.parse(
-        localStorage.getItem(wishlistKey) || "[]"
-      );
-
-      const savedCart = JSON.parse(
-        localStorage.getItem(cartKey) || "[]"
-      );
-
-      setWishlist(
-        Array.isArray(savedWishlist)
-          ? savedWishlist
-          : []
-      );
-
-      setCart(
-        Array.isArray(savedCart)
-          ? savedCart : []
-      );
-    } catch (error) {
-      console.error(
-        "Wishlist/Cart load error:",
-        error
-      );
-
-      setWishlist([]);
-      setCart([]);
-    }
+    setWishlist(getUserWishlist());
+    setCart(getUserCart());
   };
 
   // =====================================================
@@ -188,16 +157,7 @@ const Wishlist = () => {
       return;
     }
 
-
-    const cartKey = getCartKey(
-      currentUser.id
-    );
-
-
-    const currentCart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
-
+    const currentCart = getUserCart();
 
     const updatedCart = currentCart.map(
       (item) =>
@@ -210,19 +170,9 @@ const Wishlist = () => {
           : item
     );
 
-
-    localStorage.setItem(
-      cartKey,
-      JSON.stringify(updatedCart)
-    );
-
+    saveUserCart(updatedCart);
 
     setCart(updatedCart);
-
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
   };
 
   // =====================================================
@@ -238,16 +188,7 @@ const Wishlist = () => {
       return;
     }
 
-
-    const cartKey = getCartKey(
-      currentUser.id
-    );
-
-
-    const currentCart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
-
+    const currentCart = getUserCart();
 
     const existingProduct = currentCart.find(
       (item) => item.id === id
@@ -286,20 +227,9 @@ const Wishlist = () => {
 
     }
 
-
-    localStorage.setItem(
-      cartKey,
-      JSON.stringify(updatedCart)
-    );
-
+    saveUserCart(updatedCart);
 
     setCart(updatedCart);
-
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
-
 
     if (currentQuantity <= 1) {
       toast.success("Removed from cart");

@@ -1,18 +1,14 @@
 
 import { Link, useSearchParams } from "react-router-dom";
+import { getCurrentUser, getOrders } from "../utils/storage";
 
 const OrderSuccess = () => {
   const [searchParams] = useSearchParams();
 
   const orderId = searchParams.get("orderId");
 
-  const currentUser = JSON.parse(
-    localStorage.getItem("currentUser") || "null"
-  );
-
-  const orders = JSON.parse(
-    localStorage.getItem("orders") || "[]"
-  );
+  const currentUser = getCurrentUser();
+  const orders = getOrders();
 
   const order = orders.find(
     (item) =>

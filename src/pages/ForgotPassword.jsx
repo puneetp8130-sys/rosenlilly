@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getUsers, saveUsers } from "../utils/storage";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -29,9 +30,7 @@ const ForgotPassword = () => {
       return;
     }
 
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    const users = getUsers();
 
     const userExists = users.some(
       (user) =>
@@ -76,9 +75,7 @@ const ForgotPassword = () => {
       return;
     }
 
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    const users = getUsers();
 
     const updatedUsers = users.map((user) => {
       if (
@@ -94,10 +91,7 @@ const ForgotPassword = () => {
       return user;
     });
 
-    localStorage.setItem(
-      "users",
-      JSON.stringify(updatedUsers)
-    );
+    saveUsers(updatedUsers);
 
     toast.success(
       "Password reset successfully! 🎉"

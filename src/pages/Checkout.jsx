@@ -3,8 +3,11 @@ import {
   useState,
 } from "react";
 import {
+  getCurrentUser,
   getUserCart,
   saveUserCart,
+  getOrders,
+  saveOrders,
 } from "../utils/storage";
 
 import {
@@ -77,27 +80,6 @@ const InputField = ({
       )}
     </div>
   );
-};
-
-// ==================================================
-// GET CURRENT USER
-// ==================================================
-
-const getCurrentUser = () => {
-  try {
-    const user = JSON.parse(
-      localStorage.getItem("currentUser") || "null"
-    );
-
-    return user;
-  } catch (error) {
-    console.error(
-      "Error reading current user:",
-      error
-    );
-
-    return null;
-  }
 };
 
 // ==================================================
@@ -680,55 +662,12 @@ const placeOrder = (e) => {
     };
 
     // ==================================================
-    // LOAD ALL ORDERS
+    // SAVE ORDER
     // ==================================================
 
-    let orders = [];
-
-    try {
-      const savedOrders =
-        JSON.parse(
-          localStorage.getItem(
-            "orders"
-          ) || "[]"
-        );
-
-      if (
-        Array.isArray(savedOrders)
-      ) {
-        orders = savedOrders;
-      }
-    } catch (error) {
-      console.error(
-        "Error loading orders:",
-        error
-      );
-
-      orders = [];
-    }
-
-    // ==================================================
-    // ADD NEW ORDER
-    // ==================================================
-
+    const orders = getOrders();
     orders.unshift(order);
-
-    // ==================================================
-    // SAVE ORDERS
-    // ==================================================
-
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(orders)
-    );
-
-    // ==================================================
-    // ORDER EVENT
-    // ==================================================
-
-    window.dispatchEvent(
-      new Event("ordersChange")
-    );
+    saveOrders(orders);
 
     // ==================================================
     // CLEAR CURRENT USER CART ONLY

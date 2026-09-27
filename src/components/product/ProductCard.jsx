@@ -157,10 +157,6 @@ const ProductCard = ({ product }) => {
       Number(updatedProduct.quantity)
     );
 
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
-
     toast.success("Added to cart 🛒");
   };
 
@@ -173,13 +169,7 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    const currentUser = getCurrentUser();
-
-    const cartKey = `cart_${currentUser.id}`;
-
-    const cart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
+    const cart = getUserCart();
 
     const updatedCart = cart.map((item) =>
       String(item.id) === String(product.id)
@@ -191,10 +181,7 @@ const ProductCard = ({ product }) => {
         : item
     );
 
-    localStorage.setItem(
-      cartKey,
-      JSON.stringify(updatedCart)
-    );
+    saveUserCart(updatedCart);
 
     const updatedProduct = updatedCart.find(
       (item) =>
@@ -206,10 +193,6 @@ const ProductCard = ({ product }) => {
         Number(updatedProduct.quantity)
       );
     }
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
   };
 
   // =====================================================
@@ -221,13 +204,7 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    const currentUser = getCurrentUser();
-
-    const cartKey = `cart_${currentUser.id}`;
-
-    const cart = JSON.parse(
-      localStorage.getItem(cartKey) || "[]"
-    );
+    const cart = getUserCart();
 
     const currentProduct = cart.find(
       (item) =>
@@ -250,16 +227,9 @@ const ProductCard = ({ product }) => {
           String(item.id) !== String(product.id)
       );
 
-      localStorage.setItem(
-        cartKey,
-        JSON.stringify(updatedCart)
-      );
+      saveUserCart(updatedCart);
 
       setQuantity(0);
-
-      window.dispatchEvent(
-        new Event("cartChange")
-      );
 
       toast.success("Removed from cart");
 
@@ -276,16 +246,9 @@ const ProductCard = ({ product }) => {
         : item
     );
 
-    localStorage.setItem(
-      cartKey,
-      JSON.stringify(updatedCart)
-    );
+    saveUserCart(updatedCart);
 
     setQuantity(currentQuantity - 1);
-
-    window.dispatchEvent(
-      new Event("cartChange")
-    );
   };
 
   // =====================================================
@@ -331,10 +294,6 @@ const ProductCard = ({ product }) => {
     }
 
     saveUserWishlist(updatedWishlist);
-
-    window.dispatchEvent(
-      new Event("wishlistChange")
-    );
   };
 
   // =====================================================

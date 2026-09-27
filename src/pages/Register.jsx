@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getUsers, saveUsers } from "../utils/storage";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -82,9 +83,7 @@ const Register = () => {
     // GET EXISTING USERS
     // ---------------------------------------------------------
 
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
+    const users = getUsers();
 
     // ---------------------------------------------------------
     // CHECK EMAIL
@@ -138,10 +137,7 @@ const Register = () => {
       newUser,
     ];
 
-    localStorage.setItem(
-      "users",
-      JSON.stringify(updatedUsers)
-    );
+    saveUsers(updatedUsers);
 
     setTimeout(() => {
       toast.success(

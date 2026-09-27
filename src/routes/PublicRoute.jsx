@@ -1,8 +1,9 @@
 
 import { Navigate, Outlet } from "react-router-dom";
+import { getCurrentUser } from "../utils/storage";
 
 const PublicRoute = () => {
-  const currentUser = localStorage.getItem("currentUser");
+  const currentUser = getCurrentUser();
 
   // Already logged in
   if (currentUser) {
