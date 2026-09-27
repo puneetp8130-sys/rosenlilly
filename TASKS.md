@@ -37,7 +37,7 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 - [x] Remove confirmed debug `console.log` statements from routing, layout, and auth-guard components.
 - [x] Consolidate duplicated localStorage parsing and custom-event dispatching through `src/utils/storage.js`.
 - [x] Decide whether to adopt Redux. If it is not needed, remove the empty `src/redux` scaffolding; if it is needed, install/configure Redux Toolkit and migrate state deliberately.
-- [ ] Either implement or remove empty placeholders: `src/services/api.js`, common UI components, and unused component files.
+- [x] Either implement or remove empty placeholders: `src/services/api.js`, common UI components, and unused component files.
 - [ ] Replace the default Vite README with setup, architecture, testing, and deployment documentation.
 
 ## Product and platform work
