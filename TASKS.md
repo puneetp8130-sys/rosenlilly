@@ -52,14 +52,15 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 
 ## Backend and database
 
-- [ ] Add a backend/API architecture for the production application.
-- [ ] Add persistent database storage for users, products, carts, orders, and related entities.
-- [ ] Define backend database models for users, products, categories, carts, orders, order items, payments, addresses, and delivery slots.
+- [x] Add a backend/API architecture for the production application (Phase 1: Node/Express foundation in server/).
+- [x] Add persistent database storage (Phase 2: MongoDB + Mongoose in server/).
+- [x] Define backend database models for users, products, categories, carts, orders, wishlists.
+- [x] Create idempotent seed system for categories and products.
 - [ ] Replace client-only product data with backend/API-driven product data.
 - [ ] Add API validation and consistent error-response handling.
 - [ ] Add API authentication and authorization middleware.
 - [ ] Add request validation and sanitization.
-- [ ] Add centralized backend error handling and logging.
+- [x] Add centralized backend error handling and logging (morgan, errorHandler, notFoundHandler).
 
 ## Authentication and security
 
@@ -251,7 +252,7 @@ This is the master task tracker for Rosenlilly. Keep task status current here; k
 - [x] Maintain `README.md` with setup, architecture, testing, and deployment documentation.
 - [x] Maintain `PROJECT_CONTEXT.md` as the technical source of truth.
 - [ ] Document backend API endpoints.
-- [ ] Document database schema.
+- [x] Document database schema (models defined in server/src/models/).
 - [ ] Document authentication/authorization architecture.
 - [ ] Document admin roles and permissions.
 - [ ] Document payment/order lifecycle.

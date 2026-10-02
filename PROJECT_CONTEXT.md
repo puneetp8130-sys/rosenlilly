@@ -2,18 +2,21 @@
 
 ## Purpose and current scope
 
-Rosenlilly is a client-side flower storefront prototype. It lets visitors browse a small flower catalogue, search and sort products, create a local account, manage a cart and wishlist, place a mock order, and view locally stored orders.
+Rosenlilly is a flower storefront application. It lets visitors browse a small flower catalogue, search and sort products, create a local account, manage a cart and wishlist, place a mock order, and view locally stored orders.
 
-The project is currently a front-end prototype. It has no server, database, payment provider, inventory service, or production authentication system.
+The project has a React frontend and an Express backend with a MongoDB database layer. The frontend currently uses localStorage for state; the backend provides the database foundation for future API-driven state management. Authentication, payment, and production inventory are not yet implemented.
 
 ## Technology
 
-- React 19 with Vite 8
+- React 19 with Vite 8 (Frontend)
 - React Router DOM for navigation
 - Tailwind CSS 4 for styling
 - `react-hot-toast` for notifications
 - JavaScript/JSX (no TypeScript)
 - ESLint for static checks
+- Node.js + Express 4 with ES Modules (Backend in `server/`)
+- MongoDB + Mongoose (Database layer)
+- Cors, Helmet, Morgan, Dotenv (Backend middlewares)
 
 ## Runtime architecture
 
@@ -42,15 +45,22 @@ Custom browser events (`authChange`, `cartChange`, `wishlistChange`, `ordersChan
 ## Directory guide
 
 ```text
-src/
+src/                Frontend React source
   components/       Reusable navbar, home, product, common, and auth UI
   data/             Static catalogue data
   layouts/          Shared layout
   pages/            Route-level storefront and account pages
-  redux/            Empty store and slice scaffolding; not active
   routes/           Route definitions and guards
-  services/         Empty API service placeholder
   utils/            Browser-storage helpers
+server/             Backend Express API + MongoDB database layer
+  src/
+    config/         Environment and database configuration
+    middlewares/    Error & 404 handling middlewares
+    models/         Mongoose schemas (User, Category, Product, Cart, Wishlist, Order)
+    routes/         API routing (including /api/health)
+    seeds/          Database seed data and runner script
+    app.js          Express application configuration
+    server.js       Server startup, MongoDB connection & graceful shutdown
 ```
 
 ## Current routes
@@ -72,16 +82,25 @@ Catalogue browsing supports `category` (`/flowers?category=<slug>`), `occasion` 
 
 - Authentication and passwords are not secure because they run entirely in the browser. Never treat the current implementation as production-ready authentication.
 - Product data, pricing, delivery promises, reviews, and stock are static mock data.
-- Redux (`src/redux`) and API (`src/services/api.js`) are scaffolding only.
-- The production build passes, but the lint command currently fails. See `TASKS.md` for tracked remediation.
+- Both `npm run build` and `npm run lint` pass cleanly with zero errors.
+- Unused/placeholder files exist: `Button.jsx`, `Loader.jsx`, `Modal.jsx` (empty stubs), `ProductGrid.jsx`, `ProductImage.jsx`, `ProductInfo.jsx`, `Footer.jsx`, and unwired `PublicRoute.jsx`.
 
 ## Development commands
 
+### Frontend
 ```bash
 npm run dev
 npm run build
 npm run lint
 npm run preview
+```
+
+### Backend (in server/)
+```bash
+npm install
+npm run seed    # Seed categories and products into MongoDB
+npm run dev     # Start development server (requires MongoDB)
+npm start       # Start production server
 ```
 
 ## Change principles
