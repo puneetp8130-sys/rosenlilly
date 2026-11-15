@@ -150,4 +150,4 @@ orderSchema.index({ createdAt: -1 });
 // Compound index for user's order history
 orderSchema.index({ userId: 1, createdAt: -1 });
 
-export default mongoose.model('Order', orderSchema);
+export const Order = mongoose.model("Order", orderSchema);
