@@ -15,8 +15,8 @@
 
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import Category from '../models/Category.js';
-import Product from '../models/Product.js';
+import { Category } from '../models/Category.model.js';
+import { Product } from '../models/Product.model.js';
 import categoriesSeedData from './categories.seed.js';
 import productsSeedData from './products.seed.js';
 

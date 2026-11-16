@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { config } from './config/env.js';
 import apiRoutes from './routes/index.js';
+import userRouter from "./routes/user.route.js"
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Mount API routes
 app.use('/api', apiRoutes);
+app.use("api/v1/users",userRouter)
 
 // Handle 404 routes
 app.use(notFoundHandler);
